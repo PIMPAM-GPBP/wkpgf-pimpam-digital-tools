@@ -277,13 +277,13 @@ def home_page():
                                     children=[
                                         dcc.Link(
                                             ["View Digital Tools", IconArrow(size=18, color="#FFFFFF")],
-                                            href="/?page=digital-tools",
+                                            href="?page=digital-tools",
                                             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded bg-accent1 text-white font-semibold text-base hover:bg-accent1/90 transition-colors",
                                         ),
                                         dcc.Link(
                                             ["InfraGov 2.0 Info",
                                              html.Span("New", className="bg-accent4 text-white text-xs font-bold px-1.5 py-0.5 rounded leading-none")],
-                                            href="/?page=infragov",
+                                            href="?page=infragov",
                                             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded border border-white/10 bg-surface text-white font-semibold text-base hover:bg-surface-2 transition-colors",
                                         ),
                                     ],
@@ -332,7 +332,7 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/?page=digital-tools",
+                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="?page=digital-tools",
                                          className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
@@ -359,7 +359,7 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/?page=digital-tools",
+                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="?page=digital-tools",
                                          className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
@@ -415,7 +415,7 @@ def home_page():
                     ], className="text-center mb-12"),
                     html.Div([ToolAreaCard(a) for a in C.TOOL_AREAS], className="grid grid-cols-1 md:grid-cols-3 gap-4"),
                     html.Div(
-                        dcc.Link(["Explore Tools ", IconArrow(size=18, color="#FFFFFF")], href="/?page=digital-tools",
+                        dcc.Link(["Explore Tools ", IconArrow(size=18, color="#FFFFFF")], href="?page=digital-tools",
                                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded bg-accent1 text-white font-semibold text-base hover:bg-accent1/90 transition-colors"),
                         className="text-center mt-10",
                     ),
@@ -662,7 +662,7 @@ def blog_detail_page(slug):
         children=html.Div(
             className="max-w-3xl mx-auto px-4 sm:px-6",
             children=[
-                dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " Back to Blogs"], href="/?page=blogs",
+                dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " Back to Blogs"], href="?page=blogs",
                          className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent2 transition-colors mb-8"),
                 tag_el,
                 html.H1(post["title"], className="text-3xl sm:text-4xl font-extrabold text-text leading-tight mb-4"),
@@ -681,7 +681,7 @@ def not_found_page():
             html.H1("Page not found", className="text-3xl font-bold text-text mb-4"),
             html.P("The page you're looking for doesn't exist or has moved.", className="text-muted mb-8"),
             dcc.Link(["Back to Home", IconArrow(size=16, color="#FFFFFF")],
-                     href="/?page=home", className="inline-flex items-center gap-2 px-6 py-3 rounded bg-accent1 text-white font-semibold hover:bg-accent1/90 transition-colors"),
+                     href="?page=home", className="inline-flex items-center gap-2 px-6 py-3 rounded bg-accent1 text-white font-semibold hover:bg-accent1/90 transition-colors"),
         ],
     )
 

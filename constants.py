@@ -153,12 +153,12 @@ ICONS_STROKE = {
 # NAVIGATION  (components/Nav.tsx)
 # ──────────────────────────────────────────────────────────────────────────
 NAV_LINKS = [
-    {"label": "Home", "href": "/?page=home"},
-    {"label": "Digital Tools", "href": "/?page=digital-tools"},
-    {"label": "InfraGov 2.0", "href": "/?page=infragov", "badge": "New"},
-    {"label": "Digital Academy", "href": "/?page=digital-academy"},
-    {"label": "Resources", "href": "/?page=resources"},
-    {"label": "Feedback", "href": "/?page=feedback"},
+    {"label": "Home", "href": "?page=home"},
+    {"label": "Digital Tools", "href": "?page=digital-tools"},
+    {"label": "InfraGov 2.0", "href": "?page=infragov", "badge": "New"},
+    {"label": "Digital Academy", "href": "?page=digital-academy"},
+    {"label": "Resources", "href": "?page=resources"},
+    {"label": "Feedback", "href": "?page=feedback"},
 ]
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -176,8 +176,8 @@ FOOTER_TOOL_LINKS = [
 FOOTER_OTHER_LINKS = [
     {"label": "pim-pam.ai", "href": "https://pim-pam.ai", "external": True},
     {"label": "VDKC / PFM4CA", "href": "https://pfm4ca.com", "external": True},
-    {"label": "Resources", "href": "/?page=resources", "external": False},
-    {"label": "Feedback", "href": "/?page=feedback", "external": False},
+    {"label": "Resources", "href": "?page=resources", "external": False},
+    {"label": "Feedback", "href": "?page=feedback", "external": False},
 ]
 
 # ──────────────────────────────────────────────────────────────────────────

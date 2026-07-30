@@ -193,7 +193,7 @@ def NavBar():
                                 alt="PIM-PAM",
                                 className="h-14 w-auto object-contain",
                             ),
-                            href="/?page=home",
+                            href="?page=home",
                             className="flex items-center",
                         ),
                         html.Nav(desktop_links, className="hidden lg:flex items-center gap-1"),
@@ -288,7 +288,7 @@ def Footer():
                             dcc.Link(
                                 html.Img(src=asset("PIM-PAM-Logo.png"), alt="PIM-PAM",
                                          className="h-12 w-auto object-contain"),
-                                href="/?page=home", className="inline-block mb-4",
+                                href="?page=home", className="inline-block mb-4",
                             ),
                             html.P(
                                 "A World Bank initiative promoting digital tools for smarter public investment "
@@ -660,7 +660,7 @@ def BlogCard(post):
                 html.Span(["Read more ", IconArrow(size=12, color=COLORS["accent2"])], className="text-xs text-accent2 flex items-center gap-1 group-hover:gap-2 transition-all"),
             ], className="flex items-center justify-between mt-auto pt-2 border-t border-white/5"),
         ],
-        href=f'/?page=blogs&slug={post["slug"]}',
+        href=f'?page=blogs&slug={post["slug"]}',
         className="gradient-border rounded bg-surface p-6 flex flex-col gap-3 hover:bg-surface-2 transition-colors group",
     )
 
