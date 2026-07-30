@@ -1,0 +1,190 @@
+/* ============================================================================
+   styles.css — PIM-PAM Dash replica
+   Ported near-verbatim from app/globals.css in the original Next.js project,
+   plus a small set of additional helper classes needed to reproduce
+   JS-driven interactions (carousel drag, scroll-reveal, drawer/lightbox)
+   without a React runtime.
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #0A0E1A;
+  --surface: #121829;
+  --surface-2: #1A2237;
+  --text: #E6EAF2;
+  --muted: #8A93A8;
+  --accent-1: #4345aa;
+  --accent-2: #37b37f;
+  --accent-3: #64cbd6;
+  --accent-4: #f26b23;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fira Sans', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+p { margin: 0; }
+ul, ol { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+
+/* ── Gradient text utility ─────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #4345aa, #64cbd6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Gradient border utility ───────────────────────────────────────────── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(67,69,170,0.5), rgba(100,203,214,0.5));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Scrollbar styling ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(67,69,170,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(67,69,170,0.7); }
+
+/* ── Focus styles ──────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #4345aa;
+  outline-offset: 2px;
+}
+
+/* ── Logo carousel scroll animation (home "Supported By" strip) ─────────── */
+@keyframes scroll-logos {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-scroll-logos {
+  animation: scroll-logos 28s linear infinite;
+}
+.animate-scroll-logos:hover {
+  animation-play-state: paused;
+}
+
+/* ── fadeUp / fadeIn keyframes (mirrors tailwind.config.ts) ─────────────── */
+@keyframes fadeUp {
+  0%   { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============================================================================
+   Additional helper classes (Dash-port specific — not present in the
+   original globals.css, but needed to reproduce component behavior that
+   depended on React state / IntersectionObserver / manual drag handling)
+   ========================================================================= */
+
+/* Hide scrollbar on the InfraGov dimension carousel track, matching the
+   scrollbarWidth:'none' inline style used in DimensionCarousel.tsx */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* MaturityLadder.tsx used an IntersectionObserver to fade+slide cards up as
+   they enter the viewport. Reproduced here with a plain CSS transition; a
+   small script in app.py's index_string toggles `.is-visible`. */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Nav.tsx toggled these classes on scroll via a scroll-position React state */
+#site-nav.nav-scrolled {
+  background-color: rgba(10, 14, 26, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+}
+
+/* Simple line-clamp fallback (Tailwind core already ships line-clamp-*,
+   this just guarantees identical behavior even on older Tailwind builds) */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Tool detail drawer + backdrop + video lightbox transitions
+   (ToolList.tsx used translate-x-full / translate-x-0 + opacity toggles —
+   reproduced 1:1 using the same Tailwind transform utilities in app.py, this
+   just guarantees the drawer sits above everything and clips correctly) */
+#tool-drawer {
+  will-change: transform;
+}
+#tool-drawer-backdrop {
+  will-change: opacity;
+}
+
+/* Dash's default loading spinner / re-render flash can be distracting on a
+   marketing site — keep the background stable during page-content swaps */
+#page-content {
+  min-height: 60vh;
+}
+
+/* Digital Academy video card play button cursor + reset */
+.video-play-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Utility: fully transparent scrollable drag cursor state, toggled by JS */
+.dragging {
+  cursor: grabbing !important;
+  user-select: none;
+}

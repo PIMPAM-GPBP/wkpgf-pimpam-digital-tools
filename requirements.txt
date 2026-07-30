@@ -1,0 +1,2 @@
+dash>=2.14
+requests>=2.31
