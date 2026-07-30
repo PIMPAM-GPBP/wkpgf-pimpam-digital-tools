@@ -11,6 +11,7 @@ Then open http://127.0.0.1:8050
 
 import logging
 import os
+import re
 import time
 from functools import lru_cache
 
@@ -806,8 +807,17 @@ logger.info("app.layout constructed (%d top-level children).", len(app.layout.ch
 # ──────────────────────────────────────────────────────────────────────────
 
 # ── Routing ────────────────────────────────────────────────────────────
+# Posit Connect serves this app at /content/<guid>/... instead of "/", so the
+# browser's real pathname arrives as e.g. "/content/19be3c1c-.../digital-tools".
+# Strip that prefix first so the checks below still match "/", "/digital-tools", etc.
+# Without this, every hard load / reload / deep link on Connect 404s, because
+# the raw pathname never equals any of the bare routes below.
+_CONNECT_PREFIX_RE = re.compile(r"^/content/[0-9a-fA-F-]{36}")
+
+
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def route(pathname):
+    pathname = _CONNECT_PREFIX_RE.sub("", pathname or "/")
     pathname = (pathname or "/").rstrip("/") or "/"
     logger.info("Routing request for pathname=%r", pathname)
     if pathname == "/":
