@@ -153,7 +153,7 @@ ICONS_STROKE = {
 # NAVIGATION  (components/Nav.tsx)
 # ──────────────────────────────────────────────────────────────────────────
 NAV_LINKS = [
-    {"label": "Home", "href": "/"},
+    {"label": "Home", "href": "/?page=home"},
     {"label": "Digital Tools", "href": "/?page=digital-tools"},
     {"label": "InfraGov 2.0", "href": "/?page=infragov", "badge": "New"},
     {"label": "Digital Academy", "href": "/?page=digital-academy"},

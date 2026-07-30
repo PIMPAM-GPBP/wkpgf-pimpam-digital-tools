@@ -85,8 +85,6 @@ app.index_string = f"""<!DOCTYPE html>
     <link rel="icon" type="image/x-icon" href="{app.get_asset_url('pimpam.ico')}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="{C.GOOGLE_FONTS_URL}" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>{C.TAILWIND_CONFIG_JS}</script>
     {{%css%}}
 </head>
 <body class="bg-bg text-text antialiased">
@@ -683,7 +681,7 @@ def not_found_page():
             html.H1("Page not found", className="text-3xl font-bold text-text mb-4"),
             html.P("The page you're looking for doesn't exist or has moved.", className="text-muted mb-8"),
             dcc.Link(["Back to Home", IconArrow(size=16, color="#FFFFFF")],
-                     href="/", className="inline-flex items-center gap-2 px-6 py-3 rounded bg-accent1 text-white font-semibold hover:bg-accent1/90 transition-colors"),
+                     href="/?page=home", className="inline-flex items-center gap-2 px-6 py-3 rounded bg-accent1 text-white font-semibold hover:bg-accent1/90 transition-colors"),
         ],
     )
 
@@ -805,6 +803,27 @@ logger.info("app.layout constructed (%d top-level children).", len(app.layout.ch
 # ──────────────────────────────────────────────────────────────────────────
 # CALLBACKS
 # ──────────────────────────────────────────────────────────────────────────
+
+# ── URL normalization: make "/" explicit as "/?page=home" ────────────────
+# On a bare page load (no query string at all — e.g. someone hits the raw
+# Connect URL or bookmarks the root), rewrite the address bar to
+# "?page=home" via history.replaceState. This doesn't reload the page or
+# add a back-button entry; it just makes the URL an accurate, shareable
+# reflection of what's on screen, matching every other page's convention.
+app.clientside_callback(
+    """
+    function(pathname) {
+        if (!window.location.search) {
+            var newUrl = window.location.pathname + "?page=home" + window.location.hash;
+            window.history.replaceState(null, "", newUrl);
+        }
+        return false;
+    }
+    """,
+    Output("url", "refresh"),
+    Input("url", "pathname"),
+)
+
 
 # ── Routing ────────────────────────────────────────────────────────────
 # Query-string based routing: /?page=digital-tools, /?page=blogs&slug=..., etc.

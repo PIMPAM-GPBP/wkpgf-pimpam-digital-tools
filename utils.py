@@ -193,7 +193,7 @@ def NavBar():
                                 alt="PIM-PAM",
                                 className="h-14 w-auto object-contain",
                             ),
-                            href="/",
+                            href="/?page=home",
                             className="flex items-center",
                         ),
                         html.Nav(desktop_links, className="hidden lg:flex items-center gap-1"),
@@ -288,7 +288,7 @@ def Footer():
                             dcc.Link(
                                 html.Img(src=asset("PIM-PAM-Logo.png"), alt="PIM-PAM",
                                          className="h-12 w-auto object-contain"),
-                                href="/", className="inline-block mb-4",
+                                href="/?page=home", className="inline-block mb-4",
                             ),
                             html.P(
                                 "A World Bank initiative promoting digital tools for smarter public investment "
