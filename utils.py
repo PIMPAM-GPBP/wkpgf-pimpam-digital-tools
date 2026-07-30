@@ -660,7 +660,7 @@ def BlogCard(post):
                 html.Span(["Read more ", IconArrow(size=12, color=COLORS["accent2"])], className="text-xs text-accent2 flex items-center gap-1 group-hover:gap-2 transition-all"),
             ], className="flex items-center justify-between mt-auto pt-2 border-t border-white/5"),
         ],
-        href=f'/blogs/{post["slug"]}',
+        href=f'/?page=blogs&slug={post["slug"]}',
         className="gradient-border rounded bg-surface p-6 flex flex-col gap-3 hover:bg-surface-2 transition-colors group",
     )
 

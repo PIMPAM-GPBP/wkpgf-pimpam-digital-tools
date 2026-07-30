@@ -11,8 +11,8 @@ Then open http://127.0.0.1:8050
 
 import logging
 import os
-import re
 import time
+import urllib.parse
 from functools import lru_cache
 
 import requests
@@ -279,13 +279,13 @@ def home_page():
                                     children=[
                                         dcc.Link(
                                             ["View Digital Tools", IconArrow(size=18, color="#FFFFFF")],
-                                            href="/digital-tools",
+                                            href="/?page=digital-tools",
                                             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded bg-accent1 text-white font-semibold text-base hover:bg-accent1/90 transition-colors",
                                         ),
                                         dcc.Link(
                                             ["InfraGov 2.0 Info",
                                              html.Span("New", className="bg-accent4 text-white text-xs font-bold px-1.5 py-0.5 rounded leading-none")],
-                                            href="/infragov",
+                                            href="/?page=infragov",
                                             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded border border-white/10 bg-surface text-white font-semibold text-base hover:bg-surface-2 transition-colors",
                                         ),
                                     ],
@@ -334,7 +334,7 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/digital-tools",
+                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/?page=digital-tools",
                                          className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
@@ -361,7 +361,7 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/digital-tools",
+                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="/?page=digital-tools",
                                          className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
@@ -417,7 +417,7 @@ def home_page():
                     ], className="text-center mb-12"),
                     html.Div([ToolAreaCard(a) for a in C.TOOL_AREAS], className="grid grid-cols-1 md:grid-cols-3 gap-4"),
                     html.Div(
-                        dcc.Link(["Explore Tools ", IconArrow(size=18, color="#FFFFFF")], href="/digital-tools",
+                        dcc.Link(["Explore Tools ", IconArrow(size=18, color="#FFFFFF")], href="/?page=digital-tools",
                                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded bg-accent1 text-white font-semibold text-base hover:bg-accent1/90 transition-colors"),
                         className="text-center mt-10",
                     ),
@@ -664,7 +664,7 @@ def blog_detail_page(slug):
         children=html.Div(
             className="max-w-3xl mx-auto px-4 sm:px-6",
             children=[
-                dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " Back to Blogs"], href="/blogs",
+                dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " Back to Blogs"], href="/?page=blogs",
                          className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent2 transition-colors mb-8"),
                 tag_el,
                 html.H1(post["title"], className="text-3xl sm:text-4xl font-extrabold text-text leading-tight mb-4"),
@@ -807,38 +807,36 @@ logger.info("app.layout constructed (%d top-level children).", len(app.layout.ch
 # ──────────────────────────────────────────────────────────────────────────
 
 # ── Routing ────────────────────────────────────────────────────────────
-# Posit Connect serves this app at /content/<guid>/... instead of "/", so the
-# browser's real pathname arrives as e.g. "/content/19be3c1c-.../digital-tools".
-# Strip that prefix first so the checks below still match "/", "/digital-tools", etc.
-# Without this, every hard load / reload / deep link on Connect 404s, because
-# the raw pathname never equals any of the bare routes below.
-_CONNECT_PREFIX_RE = re.compile(r"^/content/[0-9a-fA-F-]{36}")
-
-
-@app.callback(Output("page-content", "children"), Input("url", "pathname"))
-def route(pathname):
-    pathname = _CONNECT_PREFIX_RE.sub("", pathname or "/")
-    pathname = (pathname or "/").rstrip("/") or "/"
-    logger.info("Routing request for pathname=%r", pathname)
-    if pathname == "/":
+# Query-string based routing: /?page=digital-tools, /?page=blogs&slug=..., etc.
+# Everything lives at "/" and only the "page" param changes, so this is a
+# single lightweight GET each time (no full-page path resolution), and it
+# sidesteps Posit Connect's /content/<guid> path-prefixing entirely — the
+# query string is untouched by whatever path prefix Connect serves the app
+# under, so no prefix-stripping hack is needed here anymore.
+@app.callback(Output("page-content", "children"), Input("url", "search"))
+def route(search):
+    query = urllib.parse.parse_qs((search or "").lstrip("?"))
+    page = (query.get("page", ["home"])[0] or "home").strip().lower()
+    logger.info("Routing request for page=%r", page)
+    if page == "home":
         return home_page()
-    if pathname == "/digital-tools":
+    if page == "digital-tools":
         return digital_tools_page()
-    if pathname == "/infragov":
+    if page == "infragov":
         return infragov_page()
-    if pathname == "/digital-academy":
+    if page == "digital-academy":
         return digital_academy_page()
-    if pathname == "/resources":
+    if page == "resources":
         return resources_page()
-    if pathname == "/feedback":
+    if page == "feedback":
         return feedback_page()
-    if pathname == "/blogs":
+    if page == "blogs":
+        slug = query.get("slug", [None])[0]
+        if slug:
+            logger.info("Routing to blog detail, slug=%r", slug)
+            return blog_detail_page(slug)
         return blogs_page()
-    if pathname.startswith("/blogs/"):
-        slug = pathname.split("/blogs/", 1)[1]
-        logger.info("Routing to blog detail, slug=%r", slug)
-        return blog_detail_page(slug)
-    logger.warning("No route matched pathname=%r — rendering 404.", pathname)
+    logger.warning("No page matched page=%r — rendering 404.", page)
     return not_found_page()
 
 
