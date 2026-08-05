@@ -292,7 +292,7 @@ TOOLS = [
             "CBD draws on two data streams: global datasets (Climate Change Institutional Indicators, GovTech Maturity Index, Infrastructure Efficiency, PEFA PI-11/12/16) and regional ECA datasets (CCIA, Infrastructure, PIIAG) \u2014 each traceable to its World Bank, IMF, or WBG source.\n\n"
             "The result: finance ministries can benchmark PFM4CA performance against peers at both a summary and indicator level."
         ),
-        "href": "https://cbd.pim-pam.net/", "screenshot": "screenshots/cbd.png", "icon": "icons/cbd.png", "videoId": None,
+        "href": "https://datanalytics.worldbank.org/country-benchmarking-dashboard/", "screenshot": "screenshots/cbd.png", "icon": "icons/cbd.png", "videoId": None,
     },
     {
         "id": "ecba", "family": "gpbp", "name": "Economic Cost Benefit Analysis Tool", "acronym": "eCBA",
@@ -331,7 +331,7 @@ TOOLS = [
             "PIA assists policymakers in identifying and planning key resources such as roads, bridges, and healthcare centres. It helps to optimise the placement of new infrastructure investments.\n\n"
             "Its goal is to increase access to public services, reduce expenses, and improve the quality of life in a region, starting with greater mapping transparency over existing infrastructure assets data."
         ),
-        "href": "https://www.figma.com/proto/MRIuLeqyVOFGJQwVi0sVAg/PIA-final?node-id=14101-76623&p=f&t=wMUuiwyzr7W56K36-0&scaling=min-zoom&content-scaling=fixed&page-id=14101%3A64991&starting-point-node-id=14101%3A76623",
+        "href": "https://datanalytics.worldbank.org/public-infrastructure-access-tool/",
         "screenshot": "screenshots/pia.png", "icon": "icons/pia.png", "videoId": None,
     },
     {
@@ -341,7 +341,7 @@ TOOLS = [
             "Allows for targeted searches across the World Bank's three operation types: Development Policy Operations (DPO), Investment Project Lending (IPL), and Program for Results (PfoR).\n\n"
             "Clusters of keywords can be mapped to a particular thematic area \u2014 for example, Public Investment Management (PIM), Public Asset Management (PAM), or State-Owned Enterprises (SOEs)."
         ),
-        "href": "https://datanalytics.worldbank.org/content/5e009cdd-7b07-4567-8f45-eb3a3f476abc/",
+        "href": "https://datanalytics.worldbank.org/governance-operations-analytics-tool/",
         "screenshot": "screenshots/goat.png", "icon": "icons/goat.png", "videoId": None,
     },
     {
