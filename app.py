@@ -11,6 +11,7 @@ Then open http://127.0.0.1:8050
 
 import logging
 import os
+import re
 import time
 import urllib.parse
 from functools import lru_cache
@@ -26,7 +27,7 @@ from utils import (
     ToolListSection, ToolDrawerContent, vimeo_embed_url, BlogCard,
     format_date_long, VideoCard, VideoIframe, FeedbackFormFields,
     FeedbackThankYou, ResourceCard, ToolAreaCard, BroughtToYouByStrip,
-    SupportedByCarousel,
+    SupportedByCarousel, EventCard, AgendaAccordion,
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -86,6 +87,15 @@ app.index_string = f"""<!DOCTYPE html>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="{C.GOOGLE_FONTS_URL}" rel="stylesheet">
     {{%css%}}
+    <style>
+        /* AgendaAccordion.tsx — strip the native <details> marker so our
+           own chevron icon is the only expand/collapse indicator, and
+           rotate that chevron when a session is open. */
+        details > summary {{ list-style: none; }}
+        details > summary::-webkit-details-marker {{ display: none; }}
+        details > summary::marker {{ content: ""; }}
+        details[open] > summary .agenda-chevron {{ transform: rotate(180deg); }}
+    </style>
 </head>
 <body class="bg-bg text-text antialiased">
     {{%app_entry%}}
@@ -133,6 +143,60 @@ app.index_string = f"""<!DOCTYPE html>
             menu.querySelectorAll('a').forEach(function (a) {{
                 a.addEventListener('click', closeMenu);
             }});
+        }}
+
+        function initResourcesDropdown() {{
+            // Desktop: click to open a floating panel; closes on an
+            // outside click, an Escape press, or picking a link inside.
+            // Mobile: click expands an inline sub-list within the mobile
+            // menu instead of a floating panel. Mirrors Nav.tsx's
+            // useState-driven "Resources" dropdown with plain JS, same
+            // pattern as initMobileNav() above.
+            var dBtn = document.getElementById('nav-resources-btn');
+            var dMenu = document.getElementById('nav-resources-menu');
+            if (dBtn && dMenu && !dBtn.__init) {{
+                dBtn.__init = true;
+                var chevron = dBtn.querySelector('img');
+                function closeDesktop() {{
+                    dMenu.classList.add('hidden');
+                    dBtn.setAttribute('aria-expanded', 'false');
+                    if (chevron) chevron.style.transform = '';
+                }}
+                function openDesktop() {{
+                    dMenu.classList.remove('hidden');
+                    dBtn.setAttribute('aria-expanded', 'true');
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                }}
+                dBtn.addEventListener('click', function (e) {{
+                    e.stopPropagation();
+                    if (dMenu.classList.contains('hidden')) openDesktop(); else closeDesktop();
+                }});
+                dMenu.querySelectorAll('a').forEach(function (a) {{ a.addEventListener('click', closeDesktop); }});
+                document.addEventListener('click', function (e) {{
+                    if (!dMenu.classList.contains('hidden') && !dMenu.contains(e.target) && e.target !== dBtn) closeDesktop();
+                }});
+                document.addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeDesktop(); }});
+            }}
+
+            var mBtn = document.getElementById('nav-mobile-resources-btn');
+            var mMenu = document.getElementById('nav-mobile-resources-menu');
+            if (mBtn && mMenu && !mBtn.__init) {{
+                mBtn.__init = true;
+                var mChevron = mBtn.querySelector('img');
+                mBtn.addEventListener('click', function () {{
+                    var isHidden = mMenu.classList.contains('hidden');
+                    mMenu.classList.toggle('hidden');
+                    mMenu.classList.toggle('flex', isHidden);
+                    mBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+                    if (mChevron) mChevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+                }});
+                mMenu.querySelectorAll('a').forEach(function (a) {{
+                    a.addEventListener('click', function () {{
+                        var mobileMenu = document.getElementById('nav-mobile-menu');
+                        if (mobileMenu) mobileMenu.classList.add('hidden');
+                    }});
+                }});
+            }}
         }}
 
         function initCarousel() {{
@@ -197,11 +261,32 @@ app.index_string = f"""<!DOCTYPE html>
             els.forEach(function (el) {{ el.classList.add('observed'); observer.observe(el); }});
         }}
 
+        function initAgendaAccordions() {{
+            // AgendaAccordion.tsx — only one session row should be open at
+            // a time within a given event's agenda. Native <details> fires
+            // a real "toggle" event when it opens/closes; when one in a
+            // data-accordion-group opens, close its siblings in that same
+            // group. (See the AgendaAccordion() docstring in utils.py.)
+            document.querySelectorAll('details[data-accordion-group]').forEach(function (el) {{
+                if (el.__init) return;
+                el.__init = true;
+                el.addEventListener('toggle', function () {{
+                    if (!el.open) return;
+                    var group = el.getAttribute('data-accordion-group');
+                    document.querySelectorAll('details[data-accordion-group="' + group + '"]').forEach(function (other) {{
+                        if (other !== el && other.open) other.open = false;
+                    }});
+                }});
+            }});
+        }}
+
         function initAll() {{
             initNavScroll();
             initMobileNav();
+            initResourcesDropdown();
             initCarousel();
             initRevealOnScroll();
+            initAgendaAccordions();
         }}
 
         function scrollToHash() {{
@@ -422,6 +507,34 @@ def home_page():
                 ],
             ),
         ),
+
+        # ── Events ────────────────────────────────────────────────────
+        html.Section(
+            className="py-14 lg:py-20 bg-surface border-b border-white/10",
+            children=html.Div(
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+                children=[
+                    html.Div(
+                        className="flex items-end justify-between mb-10",
+                        children=[
+                            SectionHeading(
+                                eyebrow="Events", heading="Explore Events",
+                                subheading="Workshops, training sessions, and conferences on public investment management and public asset management.",
+                                light_badge=True,
+                            ),
+                            dcc.Link(["View all events ", IconArrow(size=14, color="#FFFFFF")], href="?page=events",
+                                     className="hidden sm:inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors flex-shrink-0 pb-1"),
+                        ],
+                    ),
+                    html.Div([EventCard(e, compact=True) for e in C.EVENTS[:3]], className="grid grid-cols-1 md:grid-cols-3 gap-5"),
+                    html.Div(
+                        dcc.Link(["View all events ", IconArrow(size=14, color="#FFFFFF")], href="?page=events",
+                                 className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"),
+                        className="mt-8 sm:hidden text-center",
+                    ),
+                ],
+            ),
+        ),
     ])
 
 
@@ -565,6 +678,223 @@ def infragov_page():
     return html.Div([hero, what_section, why_section, dims_section, maturity_section, dashboard_section])
 
 
+def _greening_label(text):
+    """SectionLabel component from app/greening-development/page.tsx —
+    a small uppercase kicker distinct from the shared SectionHeading."""
+    return html.Span(text, className="inline-block text-xs font-bold tracking-widest uppercase text-accent2 mb-4")
+
+
+def greening_development_page():
+    hero = html.Section(
+        id="greening-hero", className="pt-44 pb-16 relative overflow-hidden",
+        style={"background": "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(55,179,127,0.18) 0%, transparent 65%), #0A0E1A"},
+        children=[
+            GridOverlay(),
+            html.Div(
+                className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+                children=html.Div(
+                    className="max-w-3xl",
+                    children=[
+                        _greening_label("Greening Development"),
+                        html.H1("Public Finances & State Owned Enterprises (SOEs) For Greening Development",
+                                className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6"),
+                        html.P("Implementing a whole-of-public-sector approach to deliver greater prosperity and sustainable development through the design and implementation of better expenditure, regulatory, and taxation policies and practices.",
+                               className="text-lg text-white/70 leading-relaxed mb-10"),
+                        html.Div(className="flex flex-wrap gap-4", children=[
+                            dcc.Link("Upcoming Events", href="?page=events",
+                                     className="inline-flex items-center gap-2 px-6 py-3 rounded bg-accent2 text-white font-semibold hover:bg-accent2/90 transition-colors"),
+                            html.A("Why Greening Development?", href="#why-greening",
+                                   className="inline-flex items-center gap-2 px-6 py-3 rounded border border-white/30 text-white font-semibold hover:bg-white/10 transition-colors"),
+                        ]),
+                    ],
+                ),
+            ),
+        ],
+    )
+
+    why_greening = html.Section(
+        id="why-greening", className="py-20 bg-surface",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div(
+                className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center",
+                children=[
+                    html.Div([
+                        _greening_label("Why"),
+                        html.H2("Why Greening Development?", className="text-3xl sm:text-4xl font-bold text-white mb-6"),
+                        html.Div([
+                            html.P("Advancing climate action and achieving green growth \u2014 what we refer to as 'greening development' \u2014 are global priorities that require tailored interventions and holistic approaches."),
+                            html.P("Green growth enables economic development that is resource efficient, low-carbon, and socially inclusive. Investing in clean energy, resilient infrastructure, and sustainable land use can reduce greenhouse gas emissions, boost local competitiveness, and generate new economic opportunities."),
+                            html.P("At the same time, effective climate action safeguards long-term economic productivity by minimising the risks and costs of climate-related shocks."),
+                        ], className="space-y-4 text-white/70 leading-relaxed"),
+                    ]),
+                    html.Div(
+                        html.Img(src=asset("images/greening/vdkc-2.png"), alt="", className="w-full h-full object-contain"),
+                        className="rounded-xl overflow-hidden aspect-[4/3] relative",
+                    ),
+                ],
+            ),
+        ),
+    )
+
+    whole_of_gov = html.Section(
+        className="py-20 bg-gray-50",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div(
+                className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center",
+                children=[
+                    html.Div(
+                        html.Img(src=asset("images/greening/vdkc-3.png"), alt="", className="w-full h-full object-contain"),
+                        className="rounded-xl overflow-hidden aspect-[4/3] relative order-2 lg:order-1",
+                    ),
+                    html.Div([
+                        _greening_label("Approach"),
+                        html.H2("Why a whole-of-government approach?", className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"),
+                        html.Div([
+                            html.P("Tackling greening development challenges and unlocking opportunities for green growth and climate action requires individual countries to design and implement policies that align with their unique development contexts."),
+                            html.P("Beyond central government, sub-national authorities and state-owned enterprises (SOEs) also need to be engaged. Their participation is essential for scaling climate action from policy design through to on-the-ground implementation."),
+                            html.P("Three factors are critical for success: country demand and ownership; strong organisational capabilities and skilled public sector staff; and modernised, digital information systems \u2014 harnessing innovations like big data and artificial intelligence."),
+                        ], className="space-y-4 text-gray-600 leading-relaxed"),
+                        html.Div(
+                            html.A("Engagement Framework", href="#framework",
+                                   className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 font-semibold hover:bg-accent1 hover:text-white transition-colors"),
+                            className="mt-8",
+                        ),
+                    ], className="order-1 lg:order-2"),
+                ],
+            ),
+        ),
+    )
+
+    vdkc_callout = html.Section(
+        className="py-10 bg-gray-50",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div(
+                className="rounded-xl border border-accent1/20 bg-accent1/5 p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between",
+                children=[
+                    html.P([
+                        "The Vienna Development Knowledge Centre (VDKC) also promotes awareness, application, and the adoption of online decision-support tools for better climate actions. Operational tools such as the Geospatial Planning and Budgeting Platform (GPBP) \u2014 which can be found on ",
+                        html.Span("pim-pam.net", className="font-semibold text-accent1"),
+                        " \u2014 can help countries maximise opportunities through user-friendly, openly disseminated methods and tools.",
+                    ], className="text-gray-700 leading-relaxed max-w-3xl"),
+                    dcc.Link("Explore Tools", href="?page=digital-tools",
+                             className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded bg-accent1 text-white text-sm font-semibold hover:bg-accent1/90 transition-colors"),
+                ],
+            ),
+        ),
+    )
+
+    framework_cards = html.Div(
+        [
+            html.Div([
+                html.Div(Icon(card["icon"], size=24, color=C.COLORS["accent1"]),
+                          className="w-12 h-12 rounded-lg bg-accent1/10 flex items-center justify-center text-accent1 flex-shrink-0"),
+                html.Div([
+                    html.H3(card["title"], className="text-base font-bold text-gray-900 mb-2"),
+                    html.P(card["desc"], className="text-sm text-gray-500 leading-relaxed"),
+                ]),
+            ], className="flex flex-col gap-4 p-6 rounded-xl border border-gray-200 bg-white hover:border-accent1/30 transition-colors")
+            for card in C.GREENING_FRAMEWORK_CARDS
+        ],
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6",
+    )
+    framework_section = html.Section(
+        id="framework", className="py-20 bg-white",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=[
+                html.Div([
+                    _greening_label("Framework"),
+                    html.H2("The Vienna Development Knowledge Centre Public Finance and SOEs Engagement Framework",
+                            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"),
+                    html.P("The VDKC Public Finance and SOEs Engagement Framework applies the whole-of-government approach to achieving country-level results for greening development. It offers a structure and pathway for governments and development practitioners to translate policy into action.",
+                           className="text-gray-500 leading-relaxed"),
+                ], className="max-w-3xl mb-12"),
+                framework_cards,
+            ],
+        ),
+    )
+
+    how_it_works = html.Section(
+        className="py-20 bg-gray-50",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div([
+                _greening_label("How It Works"),
+                html.H2("How does it work?", className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"),
+                html.Div([
+                    html.P("The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region."),
+                    html.P("The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies."),
+                ], className="space-y-4 text-gray-600 leading-relaxed"),
+            ], className="max-w-3xl"),
+        ),
+    )
+
+    results_framework = html.Section(
+        className="py-20 bg-white",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=[
+                html.Div([
+                    _greening_label("Results"),
+                    html.H2("Results Framework", className="text-3xl sm:text-4xl font-bold text-gray-900"),
+                ], className="max-w-2xl mb-10"),
+                html.Div(
+                    html.Img(src=asset("images/greening/results-framework.png"), alt="Results Framework", className="w-full h-full object-contain"),
+                    className="w-full rounded-xl overflow-hidden border border-gray-200 relative aspect-[16/7]",
+                ),
+            ],
+        ),
+    )
+
+    public_infra = html.Section(
+        className="py-20 bg-gray-50",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div(
+                className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center",
+                children=[
+                    html.Div(
+                        html.Img(src=asset("images/greening/vdkc-4.png"), alt="", className="w-full h-full object-contain"),
+                        className="rounded-xl overflow-hidden aspect-[4/3] relative",
+                    ),
+                    html.Div([
+                        html.H2("Public infrastructure investment and non-financial asset governance are critical in green transition trajectories.",
+                                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"),
+                        html.Div([
+                            html.P("Infrastructure investment decisions carry long-term implications. Failing to account for climate risk in planning and budgeting cycles leads to stranded assets, increased fiscal exposure, and missed opportunities for sustainable development."),
+                            html.P("The VDKC approach integrates people, processes, and technology to embed climate considerations into public investment management \u2014 from project appraisal through to asset lifecycle management and performance reporting."),
+                        ], className="space-y-4 text-gray-600 leading-relaxed"),
+                    ]),
+                ],
+            ),
+        ),
+    )
+
+    soes_section = html.Section(
+        className="py-20",
+        style={"background": "radial-gradient(ellipse 80% 80% at 20% 50%, rgba(55,179,127,0.15) 0%, transparent 60%), #0A0E1A"},
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=html.Div([
+                html.H2("State-owned enterprises (SOEs) play a critical role in mitigating climate change and advancing green economies due to their scale, strategic sectors, and public mandates.",
+                        className="text-3xl sm:text-4xl font-bold text-white mb-6"),
+                html.Div([
+                    html.P("Operating in key areas like energy, transport, and water, SOEs control significant emissions and infrastructure investments, positioning them as essential drivers of sustainable economic transformation \u2014 provided they have the right governance structures, incentives, and capabilities in place."),
+                    html.P("The VDKC activity has special emphasis on building SOE Community of Practice in Report 2025 for the European Europe and Central Asia (ECA) region to better address the challenges and opportunities."),
+                ], className="space-y-4 text-white/70 leading-relaxed"),
+            ], className="max-w-3xl"),
+        ),
+    )
+
+    return html.Div([
+        hero, why_greening, whole_of_gov, vdkc_callout, framework_section,
+        how_it_works, results_framework, public_infra, soes_section,
+    ])
+
+
 def digital_academy_page():
     hero = _hero_section(
         "academy-hero",
@@ -588,11 +918,177 @@ def digital_academy_page():
     ])
 
 
-def resources_page():
+EVENT_FORMAT_LABELS = {"in-person": "In-Person", "virtual": "Virtual", "hybrid": "Hybrid"}
+EVENT_FORMAT_COLORS = {"in-person": "bg-accent2/15 text-accent2", "virtual": "bg-accent1/15 text-accent1", "hybrid": "bg-accent4/15 text-accent4"}
+
+
+def events_page():
     hero = _hero_section(
-        "resources-hero",
+        "events-hero",
+        "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(55,179,127,0.18) 0%, transparent 65%)",
+        "Events", "Upcoming events",
+        "Workshops, training sessions, and conferences on public investment management, public asset management, and greening development.",
+    )
+    cards = html.Div([EventCard(e) for e in C.EVENTS], className="grid grid-cols-1 md:grid-cols-2 gap-6")
+    return html.Div([
+        hero,
+        html.Div(
+            className="py-16 bg-white",
+            children=html.Div(cards, className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"),
+        ),
+    ])
+
+
+def event_detail_page(slug):
+    event = next((e for e in C.EVENTS if e["slug"] == slug), None)
+    if not event:
+        logger.warning("event_detail_page: no event found for slug=%r — rendering 404.", slug)
+        return not_found_page()
+
+    detail = event.get("detail")
+
+    format_badge = None
+    if event.get("format"):
+        format_badge = html.Div(
+            html.Span(
+                EVENT_FORMAT_LABELS.get(event["format"], event["format"]),
+                className=f"inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full {EVENT_FORMAT_COLORS.get(event['format'], 'bg-white/10 text-white/70')}",
+            ),
+            className="mb-6",
+        )
+
+    meta_row = html.Div(
+        className="flex flex-wrap gap-5 text-sm text-white/60",
+        children=[
+            html.Div([Icon("calendar", size=15, color=C.COLORS["accent2"]), html.Span(event.get("dateLabel") or event["date"])],
+                     className="flex items-center gap-2"),
+        ] + ([html.Div([Icon("map_pin", size=15, color=C.COLORS["accent2"]), html.Span(event["location"])],
+                       className="flex items-center gap-2")] if event.get("location") else []),
+    )
+
+    hero = html.Section(
+        className="pt-40 pb-14 relative overflow-hidden bg-bg",
+        children=[
+            html.Div(className="absolute inset-0 bg-cover bg-center opacity-25",
+                      style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"}),
+            html.Div(className="absolute inset-0 bg-gradient-to-b from-bg/60 via-bg/40 to-bg/80"),
+            GridOverlay(),
+            html.Div(
+                className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
+                children=[
+                    dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " All Events"], href="?page=events",
+                             className="inline-flex items-center gap-2 text-sm text-muted hover:text-text transition-colors mb-5"),
+                    format_badge,
+                    html.H1(event["title"], className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-6"),
+                    meta_row,
+                ],
+            ),
+        ],
+    )
+
+    if not detail:
+        body = html.Div(
+            html.Div(html.P(event["description"], className="text-gray-500"),
+                      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"),
+            className="bg-white py-20",
+        )
+        return html.Div([hero, body])
+
+    sections = []
+
+    sections.append(html.Section([
+        html.H2("About the Event", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+        html.Div([html.P(p) for p in detail.get("aboutParagraphs", [])], className="space-y-4 text-gray-600 leading-relaxed"),
+    ]))
+
+    if detail.get("objectivesIntro") or detail.get("objectives"):
+        obj_children = [html.H2("Objectives & Target Audience", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5")]
+        if detail.get("objectivesIntro"):
+            obj_children.append(html.P(detail["objectivesIntro"], className="text-gray-600 leading-relaxed mb-5"))
+        if detail.get("objectives"):
+            obj_children.append(html.Ul([
+                html.Li([html.Span(className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent2"), obj],
+                        className="flex gap-3 text-gray-600 leading-relaxed")
+                for obj in detail["objectives"]
+            ], className="space-y-3"))
+        sections.append(html.Section(obj_children))
+
+    if detail.get("format"):
+        sections.append(html.Section([
+            html.H2("Format", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.P(detail["format"], className="text-gray-600 leading-relaxed"),
+        ]))
+
+    if detail.get("summary"):
+        summary_children = [html.H2("Event Summary", className="text-xs font-bold uppercase tracking-widest text-accent2")]
+        for sec in detail["summary"]:
+            summary_children.append(html.Div([
+                html.H3(sec["title"], className="text-lg font-bold text-gray-900 mb-3"),
+                html.Div([html.P(p) for p in sec["paragraphs"]], className="space-y-3 text-gray-600 leading-relaxed"),
+            ]))
+        sections.append(html.Section(summary_children, className="space-y-8"))
+
+    if detail.get("agenda"):
+        sections.append(html.Section([
+            html.H2("Event Agenda", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-6"),
+            AgendaAccordion(detail["agenda"], group_name=f"agenda-{slug}"),
+        ]))
+
+    if detail.get("links"):
+        sections.append(html.Section([
+            html.H2("Key Resources", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.Div([
+                html.A([link["label"], Icon("arrow", size=14, color=C.COLORS["accent1"])],
+                       href=link["href"], target="_blank", rel="noopener noreferrer",
+                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-accent1 hover:border-accent1/40 hover:bg-accent1/5 transition-colors")
+                for link in detail["links"]
+            ], className="flex flex-wrap gap-3"),
+        ]))
+
+    if detail.get("notes"):
+        sections.append(html.Section([
+            html.H2("Please Note", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4"),
+            html.Ul([
+                html.Li([html.Span(className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-gray-400"), note],
+                        className="flex gap-3 text-sm text-gray-600")
+                for note in detail["notes"]
+            ], className="space-y-2"),
+        ], className="rounded-lg bg-gray-50 border border-gray-200 p-6"))
+
+    if detail.get("references"):
+        ref_items = []
+        for ref in detail["references"]:
+            m = re.search(r"(https?://\S+)", ref)
+            url = m.group(1) if m else None
+            text = ref.replace(url, "").strip() if url else ref
+            ref_items.append(html.Li([
+                html.Span(className="mt-2 flex-shrink-0 w-1 h-1 rounded-full bg-gray-300"),
+                html.Span([text, html.A(url, href=url, target="_blank", rel="noopener noreferrer",
+                                          className="ml-1 text-accent1 hover:underline break-all") if url else None]),
+            ], className="flex gap-3 text-sm text-gray-500 leading-relaxed"))
+        sections.append(html.Section([
+            html.H2("Selected References", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4"),
+            html.Ul(ref_items, className="space-y-3"),
+        ]))
+
+    if detail.get("organizers"):
+        sections.append(html.Section([
+            html.H2("Organisers & Supporters", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3"),
+            html.P(detail["organizers"], className="text-sm text-gray-500 leading-relaxed"),
+        ], className="border-t border-gray-100 pt-10"))
+
+    body = html.Div(
+        html.Div(sections, className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-14"),
+        className="bg-white",
+    )
+    return html.Div([hero, body])
+
+
+def downloads_page():
+    hero = _hero_section(
+        "downloads-hero",
         "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.2) 0%, transparent 65%)",
-        "Resources", "Knowledge resources",
+        "Downloads", "Knowledge resources",
         "Download frameworks, guides, and reference documents for public infrastructure investment and asset governance.",
     )
     return html.Div([
@@ -843,10 +1339,21 @@ def route(search):
         return digital_tools_page()
     if page == "infragov":
         return infragov_page()
+    if page == "greening-development":
+        return greening_development_page()
     if page == "digital-academy":
         return digital_academy_page()
-    if page == "resources":
-        return resources_page()
+    if page == "events":
+        slug = query.get("slug", [None])[0]
+        if slug:
+            logger.info("Routing to event detail, slug=%r", slug)
+            return event_detail_page(slug)
+        return events_page()
+    if page in ("downloads", "resources"):
+        # "resources" kept as a backward-compatible alias — the footer
+        # and old bookmarks still use "?page=resources"; the nav dropdown
+        # itself links to "?page=downloads" (Nav.tsx's Resources > Downloads).
+        return downloads_page()
     if page == "feedback":
         return feedback_page()
     if page == "blogs":

@@ -128,6 +128,11 @@ ICONS_FILL = {
     "ai": ["M20.7134 8.12811L20.4668 8.69379C20.2864 9.10792 19.7136 9.10792 19.5331 8.69379L19.2866 8.12811C18.8471 7.11947 18.0555 6.31641 17.0677 5.87708L16.308 5.53922C15.8973 5.35653 15.8973 4.75881 16.308 4.57612L17.0252 4.25714C18.0384 3.80651 18.8442 2.97373 19.2761 1.93083L19.5293 1.31953C19.7058 0.893489 20.2942 0.893489 20.4706 1.31953L20.7238 1.93083C21.1558 2.97373 21.9616 3.80651 22.9748 4.25714L23.6919 4.57612C24.1027 4.75881 24.1027 5.35653 23.6919 5.53922L22.9323 5.87708C21.9445 6.31641 21.1529 7.11947 20.7134 8.12811ZM2 4C2 3.44772 2.44772 3 3 3H14V5H4V19H20V11H22V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4ZM7 13H9V17H7V13ZM11 7H13V17H11V7ZM15 10H17V17H15V10Z"],
     # components/VideoCard.tsx PlayIcon (triangle)
     "play_triangle": ["M8 5v14l11-7z"],
+    # app/greening-development/page.tsx — VDKC Engagement Framework cards
+    "greening_legislative": ["M6 2H18C18.5523 2 19 2.44772 19 3V21C19 21.5523 18.5523 22 18 22H6C5.44772 22 5 21.5523 5 21V3C5 2.44772 5.44772 3 6 3ZM7 4V20H17V4H7ZM9 6H15V8H9V6ZM9 10H15V12H9V10ZM9 14H13V16H9V14Z"],
+    "greening_institutional": ["M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11ZM12 13C8.13401 13 5 16.134 5 20H19C19 16.134 15.866 13 12 13Z"],
+    "greening_digital": ["M3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3ZM4 5V19H20V5H4ZM7 9H9V15H7V9ZM11 7H13V15H11V7ZM15 11H17V15H15V11Z"],
+    "greening_results": ["M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM11 7H13V11H17V13H11V7Z"],
 }
 
 ICONS_STROKE = {
@@ -147,18 +152,28 @@ ICONS_STROKE = {
     "calendar": '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
     # lucide-react MapPin
     "map_pin": '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+    # lucide-react ChevronDown  (Nav.tsx Resources dropdown / AgendaAccordion.tsx)
+    "chevron_down": '<path d="m6 9 6 6 6-6"/>',
 }
 
 # ──────────────────────────────────────────────────────────────────────────
 # NAVIGATION  (components/Nav.tsx)
+#   Nav.tsx now splits the top-level links from a "Resources" dropdown
+#   (Events / Digital Academy / Downloads) that opens on click (desktop)
+#   or expands inline (mobile). "Feedback" isn't in either — it's still
+#   reachable from the footer only, same as the current live site.
 # ──────────────────────────────────────────────────────────────────────────
-NAV_LINKS = [
+NAV_TOP_LINKS = [
     {"label": "Home", "href": "?page=home"},
     {"label": "Digital Tools", "href": "?page=digital-tools"},
     {"label": "InfraGov 2.0", "href": "?page=infragov", "badge": "New"},
+    {"label": "Greening Development", "href": "?page=greening-development"},
+]
+
+NAV_RESOURCES_ITEMS = [
+    {"label": "Events", "href": "?page=events"},
     {"label": "Digital Academy", "href": "?page=digital-academy"},
-    {"label": "Resources", "href": "?page=resources"},
-    {"label": "Feedback", "href": "?page=feedback"},
+    {"label": "Downloads", "href": "?page=downloads"},
 ]
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -176,7 +191,7 @@ FOOTER_TOOL_LINKS = [
 FOOTER_OTHER_LINKS = [
     {"label": "pim-pam.ai", "href": "https://pim-pam.ai", "external": True},
     {"label": "VDKC / PFM4CA", "href": "https://pfm4ca.com", "external": True},
-    {"label": "Resources", "href": "?page=resources", "external": False},
+    {"label": "Resources", "href": "?page=downloads", "external": False},
     {"label": "Feedback", "href": "?page=feedback", "external": False},
 ]
 
@@ -292,7 +307,7 @@ TOOLS = [
             "CBD draws on two data streams: global datasets (Climate Change Institutional Indicators, GovTech Maturity Index, Infrastructure Efficiency, PEFA PI-11/12/16) and regional ECA datasets (CCIA, Infrastructure, PIIAG) \u2014 each traceable to its World Bank, IMF, or WBG source.\n\n"
             "The result: finance ministries can benchmark PFM4CA performance against peers at both a summary and indicator level."
         ),
-        "href": "https://datanalytics.worldbank.org/country-benchmarking-dashboard/", "screenshot": "screenshots/cbd.png", "icon": "icons/cbd.png", "videoId": None,
+        "href": "https://cbd.pim-pam.net/", "screenshot": "screenshots/cbd.png", "icon": "icons/cbd.png", "videoId": None,
     },
     {
         "id": "ecba", "family": "gpbp", "name": "Economic Cost Benefit Analysis Tool", "acronym": "eCBA",
@@ -331,7 +346,7 @@ TOOLS = [
             "PIA assists policymakers in identifying and planning key resources such as roads, bridges, and healthcare centres. It helps to optimise the placement of new infrastructure investments.\n\n"
             "Its goal is to increase access to public services, reduce expenses, and improve the quality of life in a region, starting with greater mapping transparency over existing infrastructure assets data."
         ),
-        "href": "https://datanalytics.worldbank.org/public-infrastructure-access-tool/",
+        "href": "https://www.figma.com/proto/MRIuLeqyVOFGJQwVi0sVAg/PIA-final?node-id=14101-76623&p=f&t=wMUuiwyzr7W56K36-0&scaling=min-zoom&content-scaling=fixed&page-id=14101%3A64991&starting-point-node-id=14101%3A76623",
         "screenshot": "screenshots/pia.png", "icon": "icons/pia.png", "videoId": None,
     },
     {
@@ -341,7 +356,7 @@ TOOLS = [
             "Allows for targeted searches across the World Bank's three operation types: Development Policy Operations (DPO), Investment Project Lending (IPL), and Program for Results (PfoR).\n\n"
             "Clusters of keywords can be mapped to a particular thematic area \u2014 for example, Public Investment Management (PIM), Public Asset Management (PAM), or State-Owned Enterprises (SOEs)."
         ),
-        "href": "https://datanalytics.worldbank.org/governance-operations-analytics-tool/",
+        "href": "https://datanalytics.worldbank.org/content/5e009cdd-7b07-4567-8f45-eb3a3f476abc/",
         "screenshot": "screenshots/goat.png", "icon": "icons/goat.png", "videoId": None,
     },
     {
@@ -438,6 +453,482 @@ BLOGS = [
         "excerpt": "The Governance Operations Analytics Tool maps keyword clusters to PIM, PAM, and SOE themes across DPO, IPL, and PfoR operation types.",
         "tag": "AI",
         "body": "Placeholder content for this blog post.",
+    },
+]
+
+# ──────────────────────────────────────────────────────────────────────────
+# EVENTS  (content/events.ts, app/events/page.tsx, app/events/[slug]/page.tsx)
+#   Each event's "detail" dict mirrors the EventDetail TS interface:
+#   aboutParagraphs / objectivesIntro / objectives / format / agenda /
+#   summary / notes / links / references / organizers — all optional,
+#   rendered conditionally by event_detail_page() exactly like the
+#   original AgendaAccordion.tsx + app/events/[slug]/page.tsx did.
+# ──────────────────────────────────────────────────────────────────────────
+EVENTS = [
+    {
+        "slug": "public-sector-worth-sarajevo-2026",
+        "title": "Public Sector Worth: Valuing Non-Financial Assets",
+        "date": "2026-10-26",
+        "dateLabel": "October 26, 2026",
+        "location": "Sarajevo, Bosnia and Herzegovina",
+        "format": "in-person",
+        "description": "A half-day event demonstrating how countries across the region are gaining a better handle on the non-financial assets side of their public sector balance sheets \u2014 covering IPSAS standards, real asset management practices, AI, and emerging InfraGov 2.0 findings on Public Asset Governance.",
+        "detail": {
+            "aboutParagraphs": [
+                "A critical first step in better managing the public sector balance sheet is knowing what you own and what it's worth. This half-day event will demonstrate how countries across the region are gaining a better handle on the non-financial assets side of their balance sheets, specifically land, property, and infrastructure, for decision-making and day-to-day management purposes.",
+                "Participants will cover key concepts and perspectives from international accounting good practices (IPSAS 33/45, 44), real asset management practices, and the use of digital technologies, including Artificial Intelligence (AI), to generate better outcomes in the public sector, revenue, and public financial management (PFM).",
+                "The event will disseminate emerging findings from the World Bank InfraGov 2.0 guidance on Public Asset Governance Functional Assessments (PAG-FA), as well as how Ministries of Finance can best spearhead tangible improvements in optimizing public sector worth across time for national, sub-national, and State-Owned Enterprise (SOE) levels, including addressing potential risks such as climate change.",
+            ],
+            "organizers": "Co-organized with the Public Expenditure Management Peer Assisted Learning (PEMPAL) network. Pre-event to the PEMPAL Treasury Community of Practice (CoP) Plenary.",
+        },
+    },
+    {
+        "slug": "public-sector-staffing-digitalization-2025",
+        "title": "Public Sector Staffing and Digitalization for Public Infrastructure Investment Results",
+        "date": "2025-12-03",
+        "dateLabel": "December 3\u20135, 2025",
+        "location": "Vienna, Austria",
+        "format": "in-person",
+        "description": "A workshop assessing strategies for addressing core PIM capacity challenges, showcasing elements of a core curriculum for PIM skills, and exploring how digitalization and AI can support improved public investment systems.",
+        "detailsHref": "https://pfm4ca.com/public-sector-staffing-and-digitalization-for-public-infrastructure-investment-results-dec25/",
+        "detail": {
+            "aboutParagraphs": [
+                "Effective Public Investment Management (PIM) requires purposeful leadership and specialized staffing, competencies, and skills in the public sector. Public sector staff need specific knowledge, skills, abilities, and behaviors to carry out their roles and responsibilities effectively. To generate good public investment outcomes, it is crucial to have the right personnel in the right positions, both in central PIM unit roles but also across various government levels (including Ministries, Departments and Agencies, Sub-National Governments, and State-Owned Enterprises).",
+                "The World Bank's 8 Must-Haves identify the key PIM cycle functions that public sector personnel are expected to fulfill in improved infrastructure outcomes. While some PIM aspects can be outsourced, essential skills remain necessary to define, contract, and utilize these inputs effectively. Gaps in specific PIM skills echo some of the wider challenges in successful Public Administration Reform across the region.",
+                "Learning results should be clear and sustainable. This calls for a systematic approach to skills development and capacity building, as training on PIM often occurs in ad hoc fashion with vague or limited impacts. Current examples of developing PIM curricula, training-of-trainers and partnering with public sector academies show promising results.",
+                "PIM skills and results need to be assessed against clear outcome metrics. Key outcome indicators include the number and value of projects subject to PIM at minimum standards; cost and time overruns during implementation; the number and value of projects subject to climate change and environmental due diligence; and the efficiency of public investment spending. Digitalization and emerging technologies such as big data and AI are transforming the PIM landscape and necessitating relevant skills development.",
+            ],
+            "objectivesIntro": "This event assessed strategies for addressing core PIM capacity challenges, showcased elements of a core curriculum and resources for PIM skills, and set out ways these can be effectively leveraged for impact across the region. The workshop focused on central PIM authorities, public investment project owners from national agencies, sub-national governments and SOEs, and public sector academies expected to deliver continuous quality PIM training.",
+            "objectives": [
+                "Review strategies for addressing core PIM capacities, required roles, responsibilities, competencies and skills for country staffing related to PIM, including alignments to Single Project Pipeline (SPP) commitments.",
+                "Identify challenges related to these gaps and design solutions to effectively address them, develop organisational enablers, and leverage PIM skills to drive impact across the region.",
+                "Showcase and assess the potentials of new methods, tools, and technologies, with a focus on how digitalization, big data, and AI can support solutions for improving PIM-PAM systems.",
+                "Foster peer exchange and develop competencies in key PIM cycle functions, digital transformation, problem-solving, and communication of proposals to the political level.",
+            ],
+            "format": "Face-to-face, two-and-a-half day workshop covering peer-learning presentation sessions, learning sprints, and field visits. Draft materials and the link for online access were circulated prior to the event.",
+            "agenda": [
+                {
+                    "day": "Wednesday, December 3, 2025",
+                    "venue": "Verwaltungsakademie, T-Center, Rennweg 97-99, 1030 Wien",
+                    "sessions": [
+                        {"time": "08:30\u201309:00", "title": "Registration", "description": ["Check in & Registration"]},
+                        {
+                            "time": "09:00\u201309:30", "title": "Welcome Remarks", "moderator": "Kai Kaiser, World Bank",
+                            "speakers": [
+                                "Fabian Seiderer \u2014 Practice Manager, World Bank",
+                                "Emcet O. Tas \u2014 Program Manager, Vienna Development Knowledge Center",
+                                "Christian Weise \u2014 DG ECFIN",
+                                "Sandra Rauecker-Grillitsch \u2014 Federal Public Administration Academy (VAB)",
+                                "Ursula Rosenbichler \u2014 Austrian School of Government (ASG)",
+                            ],
+                        },
+                        {
+                            "time": "09:30\u201311:00", "title": "Framing the Vision and Challenge", "moderator": "Jonas Arp, World Bank",
+                            "description": [
+                                "PIM Success Metrics: Ownership, Staffing, and Systems for Proportionality and Materiality \u2014 Jonas Arp and Kai Kaiser, World Bank",
+                                "Public Investment Practices in the European Union \u2014 Christian Weise, European Commission, DG ECFIN",
+                                "Principles of effective single project pipelines \u2014 Ferdinand Pot, OECD SIGMA",
+                                "Q&A and discussion",
+                            ],
+                        },
+                        {"time": "11:00\u201311:15", "title": "Break"},
+                        {
+                            "time": "11:15\u201312:45", "title": "Workshop 1: Country Staffing & Competencies for PIM Outcomes", "moderator": "Julia Piotrowska",
+                            "description": [
+                                "Who is needed in the Central Finance Agency and Line Agencies, SOE to make PIM a success?",
+                                "What are the roles (personas) and responsibilities?",
+                                "What are key competencies and skills?",
+                                "What are the gaps between the current and the aimed situation?",
+                                "Work in groups & presentations",
+                            ],
+                            "output": "Structured chart that maps key PIM competencies required across 8 Must Have Dimensions and gaps to current situation.",
+                            "outcome": "Shared understanding and validation of competency gaps, enabling the creation of a prioritised action plan for skill development.",
+                        },
+                        {"time": "12:45\u201313:30", "title": "Lunch Break"},
+                        {
+                            "time": "13:30\u201315:15", "title": "Sharing Experiences from Peers: Organising for Better PIM", "moderator": "Aleksandra Drecun, World Bank",
+                            "description": [
+                                "PIM reform in Ukraine \u2014 Viktor Nestulia",
+                                "Albania: Translating Training into better Projects \u2014 Renald Petriti",
+                                "Lithuania: Integrated and Digital PIM \u2014 Linas Jasiukevi\u010dius",
+                            ],
+                        },
+                        {
+                            "time": "15:15\u201316:30", "title": "Workshop 2: Identification and Definition of Core Challenges in PIM", "moderator": "Climate Lab",
+                            "description": [
+                                "Introduction to the Human Centric Design Framework",
+                                "Identify main challenges and bottlenecks in PIM-PAM",
+                                "Prioritisation and selection of a challenge",
+                                "Definition of challenge, stakeholders including organisational level (national, sub-national, SOEs)",
+                                "Reasons for Action / Consequences of Inaction",
+                            ],
+                            "output": "Visualised problem map detailing key challenges and bottlenecks within the PIM-PAM ecosystem, linking issues to potential root causes.",
+                            "outcome": "Capacity to perform a systemic analysis of complex problems and accurately identify core challenges and map key stakeholders.",
+                        },
+                    ],
+                },
+                {
+                    "day": "Thursday, December 4, 2025",
+                    "venue": "Climate Lab, Wien Energie Servicetreff, Spittelauer L\u00e4nde 45",
+                    "sessions": [
+                        {"time": "08:30\u201309:00", "title": "Registration"},
+                        {"time": "09:00\u201309:30", "title": "Climate Lab Vienna", "description": ["Welcome and presentation of relevant showcases \u2014 Barbara Inmann and Florian W\u00fcrrer, Climate Lab Vienna"]},
+                        {
+                            "time": "09:30\u201310:30", "title": "Workshop 3: Solutions for Optimised PIM Results", "moderator": "Climate Lab",
+                            "description": [
+                                "Recap of Workshop 2 and Definition of 'How Might We?' Question",
+                                "Ideation: Brainstorming on potential solutions for defined challenges",
+                                "How can technology and AI support?",
+                                "Prioritisation of ideas and defining first steps",
+                            ],
+                            "output": "List of prioritised opportunities to improve the PIM-PAM system.",
+                            "outcome": "Potential approaches and solutions for specific country situations, including potential based on new technologies and AI.",
+                        },
+                        {
+                            "time": "10:30\u201311:30", "title": "Potentials of Digitalization and AI", "moderator": "Kai Kaiser, World Bank",
+                            "description": [
+                                "Potentials of Digitalization and AI \u2014 Joao Ricardo Vasconcelos, World Bank",
+                                "Country experience \u2014 Montenegro: Jelena Jovetić; Georgia: Giorgi Kakauridze; Ukraine: Viktor Nestulia",
+                            ],
+                        },
+                        {"time": "11:30\u201311:45", "title": "Break"},
+                        {
+                            "time": "11:45\u201312:45", "title": "Workshop 4: Designing a PIM Solution Concept", "moderator": "Climate Lab",
+                            "description": [
+                                "Designing a Concept for the Top Idea",
+                                "Impact Analysis based on SDGs: Benefits (positive SDGs), Risks and Mitigation Measures",
+                                "Sketching a First Prototype",
+                            ],
+                            "output": "Concept for the implementation of a new approach in the client country's PIM-PAM systems.",
+                            "outcome": "Enhanced capacity to develop, prioritise, and articulate innovative solutions for PIM-PAM challenges.",
+                        },
+                        {"time": "12:45\u201313:15", "title": "Lunch Break"},
+                        {"time": "13:30\u201314:00", "title": "Bus Transfer to Field Visit"},
+                        {
+                            "time": "14:00\u201316:00", "title": "Field Visit: Vienna Flood Resilience Investments / Vienna Port Facilities",
+                            "description": [
+                                "Arrival at thinkport VIENNA \u2014 welcome, briefing",
+                                "thinkport Vienna: Vienna Harbor logistics innovations hub \u2014 Henrike Bauer",
+                                "River Management & Flood Protection: the viadonau State-owned Enterprise \u2014 Winfried F\u00fcrst",
+                                "Site & Project Visit: Hafen Albern Flood Protection Infrastructure \u2014 Michael Pistracher, Harbour Master",
+                            ],
+                        },
+                        {"time": "16:00\u201316:30", "title": "Bus Transfer"},
+                        {"time": "16:30", "title": "Aligning PIM and SPPs: Priorities and Experiences", "description": ["Including for sectoral and local SPPs \u2014 practical feedback to operationalising principles and country activities \u2014 Round Table discussion"]},
+                        {"time": "17:30", "title": "Dinner"},
+                    ],
+                },
+                {
+                    "day": "Friday, December 5, 2025",
+                    "venue": "Verwaltungsakademie, T-Center, Rennweg 97-99, 1030 Wien",
+                    "sessions": [
+                        {
+                            "time": "09:00\u201310:00", "title": "Key Principles and Competencies in Communication", "moderator": "Aleksandra Drecun",
+                            "description": [
+                                "Key principles: Transparency, Proportionality & Materiality, Execution \u2014 Kai Kaiser",
+                                "Competencies in communication with political level \u2014 Ursula Rosenbichler, Austrian School of Government",
+                                "Discussion and exchange of experiences between participants",
+                            ],
+                        },
+                        {
+                            "time": "10:00\u201311:00", "title": "Workshop 5: Communication & Lessons Learned", "moderator": "Gerhard Embacher-K\u00f6hle & Climate Lab",
+                            "description": [
+                                "Preparation of presentation of concepts created in previous workshops",
+                                "Identification of lessons learned and takeaways",
+                            ],
+                        },
+                        {"time": "11:00\u201311:15", "title": "Coffee Break"},
+                        {
+                            "time": "11:15\u201312:00", "title": "Presentation and Discussion", "moderator": "Gerhard Embacher-K\u00f6hle & Climate Lab",
+                            "description": [
+                                "Presentation of results and takeaways prepared in Workshop 5",
+                                "Reflection and comments by experts",
+                            ],
+                        },
+                        {"time": "12:00\u201312:30", "title": "Priorities, Next Steps and Farewells", "description": ["Emcet O. Tas \u2014 Program Manager, Vienna Development Knowledge Center"]},
+                    ],
+                },
+            ],
+            "notes": [
+                "Participants should bring laptops or relevant devices to the workshops.",
+                "Printed versions of suggested readings and presentations were not provided at the event.",
+            ],
+            "organizers": "This PFM4CA learning event was organised by the Austrian School of Government (ASG) and the World Bank. Supported by the Financial Management Umbrella Program (FMUP) and the European Union (EU), with technical assistance from the Western Balkans Enhancing Infrastructure Governance (EIG) programme.",
+        },
+    },
+    {
+        "slug": "public-sector-skills-pim-2025",
+        "title": "Public Sector Skills for Public Investment Management Results",
+        "date": "2025-06-25",
+        "dateLabel": "June 25, 2025",
+        "location": "Austrian School of Government (ASG) / Online",
+        "format": "hybrid",
+        "description": "A session defining a core curriculum of PIM skills for the public sector, generating consensus on the key skills and competencies needed to strengthen PIM in a scalable and sustainable way across the region.",
+        "detailsHref": "https://pfm4ca.com/public-sector-skills-for-public-investment-management-results/",
+        "detail": {
+            "aboutParagraphs": [
+                "Effective Public Investment Management (PIM) requires purposeful leadership and specialized competencies in the public sector. These competencies encompass specific knowledge, skills, abilities, and behaviors that professionals need to carry out their roles and responsibilities effectively. To generate good public investment outcomes, it is crucial to have the right personnel in the right positions, both in central PIM roles but also across various government levels.",
+                "The World Bank's 8 Must-Haves identify the key PIM cycle functions that public sector personnel are expected to fulfill in improved infrastructure outcomes. Gaps in specific PIM skills echo some of the wider challenges in successful Public Administration Reform across the region. Skills deficits in key PFM functions impede daily technical operations as well as reform leadership amid efforts towards European Union accession.",
+                "The relationship between PIM skills and results also needs to be framed against outcome metrics. Key outcome indicators include the number and value of projects subject to PIM at minimum standards; cost and time overruns during implementation; and the efficiency of public investment spending and perceived quality of public infrastructure.",
+                "A systematic approach is needed to evaluate effective organisational structures, competency frameworks, and performance metrics for individuals and task teams. Emerging technologies such as big data and AI are transforming the PIM landscape and necessitating relevant skills for effective utilization.",
+            ],
+            "objectivesIntro": "The event defined a core curriculum of PIM skills for the public sector, focused on central PIM authorities, public investment project owners, and Public Sector Academies. It also engaged international development partners from agencies such as the EC, IMF, and OECD. The workshop formed part of the lead-up to a conference in Vienna in September 2025.",
+            "objectives": [
+                "Achieve a common understanding of key PIM delivery skills, regional capacity gaps, and issues.",
+                "Crowdsource and prioritise capacity and skills issues and possible solutions to be refined at the September event in Vienna.",
+                "Discuss the possible design of a PIM curriculum and competency framework.",
+            ],
+            "format": "Online/hybrid. Draft materials and connection link were circulated before the event. Further resources can be found at pim-pam.net.",
+            "agenda": [
+                {
+                    "sessions": [
+                        {
+                            "time": "09:00", "title": "Welcome Remarks",
+                            "speakers": [
+                                "Ms. Sandra Rauecker-Grillitsch \u2014 Austrian Federal Public Administration Academy",
+                                "Mr. Fabian Seiderer \u2014 Practice Manager, World Bank",
+                            ],
+                        },
+                        {
+                            "time": "09:15", "title": "Skills for Public Investment Results",
+                            "description": [
+                                "Achieving and sustaining good PIM outcomes is hampered by persistent capacity, skills and organisational gaps. This session explores data on the nature of these gaps and discusses their implications at the country level from the perspective of both PIM coordination and project management.",
+                                "Successful PIM outcomes result from the effective alignment of people, processes, and technologies. The session outlines the key performance metrics essential for achieving successful PIM and focuses on identifying key organisational requirements and skills and proposing strategies for addressing them.",
+                            ],
+                            "speakers": [
+                                "Mr. Kai-Alexander Kaiser \u2014 Senior Governance and Public Sector Specialist, World Bank",
+                                "Mr. Klas Klaas \u2014 Senior Advisor / Policy Analyst, OECD SIGMA",
+                                "Mr. Jonas Frank \u2014 Regional Advisor, PIM Transparency Standards, IMF",
+                            ],
+                            "moderator": "Ms. Mediha Agar \u2014 Senior Public Sector Specialist, World Bank",
+                        },
+                        {
+                            "time": "10:45", "title": "Next Generation Public Sector Academies",
+                            "description": [
+                                "Public Sector Academies (PSAs) can contribute significantly to the continuous training of a broad spectrum of public officials, helping to ensure alignment with policy frameworks and practices. This section delves into the challenges faced by PSAs in the region and outlines strategies to make them more effective in supporting PIM.",
+                            ],
+                            "speakers": [
+                                "Ms. Natia Gulua \u2014 Head of Budget Department, Ministry of Finance of Georgia (The ePIM Journey & Learning in Georgia)",
+                                "Elda Baguca \u2014 Albanian School of Public Administration (PIM ToT and further roll out experience in Albania)",
+                                "Aleksandra Lulkovska \u2014 Public Finance Academy, North Macedonia (PIM Training experience and further steps)",
+                            ],
+                            "moderator": "Mr. Jonas Arp Fallov \u2014 Senior Public Sector Specialist, World Bank",
+                        },
+                        {
+                            "time": "11:45", "title": "Closing Remarks",
+                            "description": ["Where do we want to be in September? Next steps and expectations regarding the functional strengthening of PIM and PAM across the regions, country priorities, and expectations for the Vienna conference."],
+                            "moderator": "Mr. Fabian Seiderer \u2014 Practice Manager, World Bank",
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
+        "slug": "developing-kpis-soes-2025",
+        "title": "Developing KPIs for SOEs: Peer Learning on Performance Metrics for State-Owned Enterprises in Europe and Central Asia",
+        "date": "2025-06-17",
+        "dateLabel": "June 17, 2025",
+        "location": "Online",
+        "format": "virtual",
+        "description": "A peer-to-peer learning session on developing KPI systems to enhance performance, transparency, and accountability in state-owned enterprises across the Europe and Central Asia region.",
+        "detailsHref": "https://pfm4ca.com/developing-kpis-for-soes-peer-learning-on-performance-metrics-for-state-owned-enterprises-in-europe-and-central-asia/",
+        "detail": {
+            "aboutParagraphs": [
+                "State-Owned Enterprises (SOEs) are critical levers for public investment and service delivery. Yet, ensuring they deliver on both commercial and public mandates requires tools that can clearly translate ownership goals into measurable outcomes. At the heart of this challenge are Key Performance Indicators (KPIs).",
+                "To address this, the World Bank convened a peer-to-peer learning session titled 'Setting Targets: Developing KPIs for SOEs \u2013 International Experiences and Lessons for ECA.' The event brought together around 45 SOE policymakers, practitioners, and international experts to discuss how strategic KPI systems can be designed to enhance performance, transparency, and accountability in SOEs. The session was the first event hosted under the recently established Community of Practice on SOE Governance for the Western Balkans and Eastern Partnership countries.",
+            ],
+            "summary": [
+                {
+                    "title": "Diverse Experiences, Shared Challenges",
+                    "paragraphs": [
+                        "In his opening remarks, Fabian Seiderer, Practice Manager at the World Bank, underscored that KPIs 'translate policy priorities into corporate priorities,' adding that 'SOEs are often catalysts for private investment and development \u2014 if we get governance right.' He cautioned against 'gaming' of indicators unless robust oversight mechanisms are in place.",
+                        "Aakriti Chandihok, Director at Austria's \u00d6BAG, shared how KPIs are structured around three pillars: value creation for portfolio companies, long-term shareholder returns, and broader public value for Austria as a business location. Kazakhstan's Timur Onzhanov, Deputy Chairman of Baiterek Holding, illustrated how cascading KPIs are derived from national development strategies down to the enterprise level.",
+                        "Yoon Q. Lee, Visiting Fellow from Korea's Institute of Public Finance, presented Korea's mature and institutionalised approach \u2014 embedded in law, combining standardised national guidelines with SOE-specific targets, linking KPI evaluations to financial incentives and sanctions.",
+                    ],
+                },
+                {
+                    "title": "Reformers Reflect",
+                    "paragraphs": [
+                        "Discussants from Croatia and Moldova shared how they are designing new KPI systems as part of broader SOE governance reforms. Leon \u017dulj, Director at Croatia's Ministry of Finance, emphasised the need to balance 'financial efficiency with fulfilment of public missions.' Maxim S\u00e2rbu, from Moldova's Public Property Agency, raised questions on data collection and accountability mechanisms when targets are missed.",
+                        "In closing remarks, Minas Trubljanin, Director General at Montenegro's Ministry of Finance, reflected: 'In all the models we saw, KPIs are not peripheral \u2014 they are central to how state ownership is exercised. But it's equally clear that information systems and institutional capacity must keep pace.'",
+                    ],
+                },
+                {
+                    "title": "Looking Ahead",
+                    "paragraphs": [
+                        "This event marked the launch of the SOE Governance Community of Practice in ECA and fed into the World Bank's Vienna Development Knowledge Center agenda. Future sessions will continue to build a peer network of policymakers committed to making SOEs more transparent, efficient, and accountable.",
+                    ],
+                },
+            ],
+        },
+    },
+    {
+        "slug": "greening-pfm-learning-event-2024",
+        "title": "Greening Public Financial Management \u2014 Learning Event",
+        "date": "2024-12-11",
+        "dateLabel": "December 11\u201313, 2024",
+        "location": "Vienna, Austria",
+        "format": "in-person",
+        "description": "A three-day learning event on greening public financial management, bringing together practitioners from across the Europe and Central Asia region to build capabilities for climate action through better public finance systems.",
+        "detailsHref": "https://pfm4ca.com/greening-public-financial-management/",
+        "detail": {
+            "aboutParagraphs": [
+                "The Public Financial Management for Climate Action (PFM4CA) for ECA is an integrated framework that supports country-level results by building country ownership and institutional capabilities for mitigation and adaptation results. The framework seeks to build on systematic and evidence-based diagnostics to prioritise better and sequence operational support in green PFM. Its primary focus is on the 'how', optimising promised results across different time horizons, and mitigating risks or pitfalls.",
+                "The PFM4CA engagement framework takes a whole-of-government approach to achieving country-level results. National, sub-national, and SOE institutional sectors are all critical to delivering on climate actions across the ECA region. The PFM4CA is built on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action objectives.",
+                "Given the long-term implications of inertia and green transition trajectories associated with public infrastructure investments and non-financial asset governance, this area of PFM receives particular attention. Climate action results will depend on the effectiveness of PFM-related policies and practices.",
+                "The PFM4CA initiative also works to promote awareness, application, and adoption of online decision-support tools for better climate actions. Through an integrated people, process, and technology engagement framework, it aims to stimulate public sector modernisation for more inclusive and climate-smart development across the ECA region. Functional resources such as the Geospatial Planning and Budgeting Platform (GPBP) \u2014 which can be found on pim-pam.net \u2014 can help realise this opportunity.",
+            ],
+            "agenda": [
+                {
+                    "day": "Day 1 \u2014 Foundations of PFM for Climate Action",
+                    "sessions": [
+                        {
+                            "time": "09:00", "title": "Welcome & Introduction",
+                            "speakers": ["World Bank and Austrian School of Government (ASG) representatives", "Kai Kaiser", "Antonia Ida Grafl", "Jeremy Hills"],
+                        },
+                        {
+                            "time": "09:30", "title": "Session 1: Climate Change and Our Response (1.5 Hours)",
+                            "description": [
+                                "An overview of the science behind climate change, along with a summary of anticipated global and regional changes specific to ECA countries. Explores the significance of IPCC assessments and their implications for future climate and socio-economic effects.",
+                                "Covers the United Nations Framework Convention on Climate Change (UNFCCC), the Paris Accord and Nationally Determined Contributions (NDCs), and strategies for addressing climate change including mitigation and adaptation.",
+                            ],
+                            "speakers": ["Jeremy Hills"],
+                        },
+                        {
+                            "time": "11:15", "title": "Session 2: The Economics of Climate Change (1.5 Hours)",
+                            "description": ["Addresses the economic implications of climate change, exploring examples of climate-related impacts and their economic costs. Analyses the costs associated with responding to climate change and possible transition risks, and considers the role of government finance in supporting the national climate response."],
+                            "speakers": ["Jeremy Hills"],
+                        },
+                        {
+                            "time": "14:00", "title": "Session 3: The Interplay of Climate Change and Public Finances (1.5 Hours)",
+                            "description": [
+                                "Highlights the significant fiscal impact of climate change as a critical consideration in public financial management. Participants gain insight into climate change as a fiscal risk and the specific channels through which effects like loss and damage can be manifested.",
+                                "Prompts participants to reconsider the role of finance ministries in climate governance, while offering a rationale for the climate-responsive management of public resources.",
+                            ],
+                            "speakers": ["Antonia Ida Grafl"],
+                        },
+                        {
+                            "time": "15:45", "title": "Session 4: Climate-sensitive Public Financial Management (1.5 Hours)",
+                            "description": [
+                                "Introduces Green Public Financial Management as an innovative approach to managing public finances in a sustainable and climate-sensitive way. Participants explore specific entry points within the PFM cycle to integrate climate considerations into PFM practices, systems, and frameworks.",
+                                "Demonstrates how diagnostic tools such as the CCIA and PEFA Climate can be leveraged to identify gaps, opportunities, and recommendations for climate governance reform.",
+                            ],
+                            "speakers": ["Antonia Ida Grafl"],
+                        },
+                        {
+                            "time": "17:30", "title": "Fireside Chat: Green Budgeting in Austria",
+                            "description": ["Explores the challenges and hurdles of implementing a Green Budgeting approach through a good-practice example. Participants are guided through the lessons learned by the Austrian Ministry of Finance when integrating climate considerations into the budget cycle."],
+                        },
+                    ],
+                },
+                {
+                    "day": "Day 2 \u2014 Taking Agency: Practical Methods for Climate Action in PFM",
+                    "sessions": [
+                        {
+                            "time": "09:15", "title": "Session 1: How to Design and Implement Solutions for Complex Problems (1.5 Hours)",
+                            "description": [
+                                "Equips participants with tools to take ownership and drive sustainable change in PFM. Provides an introduction to the core principles of problem- and stakeholder-oriented service design, including frameworks such as Problem-Driven Iterative Adaptation (PDIA) and Design Thinking.",
+                                "Participants explore why these frameworks can be pivotal to efficient PFM and gain hands-on tools for creating solutions tailored to a specific country's context and the unique needs and challenges of its stakeholders.",
+                            ],
+                            "speakers": ["Gerhard Embacher-K\u00f6hle", "Fiona Hahn", "Du\u0161an Jankovi\u0107"],
+                        },
+                        {
+                            "time": "11:00", "title": "Session 2: Workshop \u2014 Identification and Definition of Challenges (1.5 Hours)",
+                            "description": [
+                                "Participants identify specific challenges within their countries, drawing from the gaps, opportunities, and recommendations discussed on day one. Identified challenges are assessed based on criteria such as complexity, suitability, and cross-country relevance, and participants vote to select three key challenges.",
+                                "Divided into three groups, participants refine the core problem and identify relevant stakeholders, their needs, pain points, and further relevant characteristics.",
+                            ],
+                        },
+                        {
+                            "time": "13:30", "title": "Session 3: Workshop \u2014 Ideation and Prototyping for Solutions (1.5 Hours)",
+                            "description": [
+                                "Participants apply various tools and methods to identify potential solutions for the defined problem, select one idea, outline a possible solution, and create a quick prototype. Participants then present the challenge, along with their ideas and solutions, to the group.",
+                                "Having experienced a full cycle of problem definition, ideation, prototyping, and testing, participants reflect on the potential use of the practised frameworks in their own organisations.",
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "day": "Day 3 \u2014 Regional Experiences and Future Directions",
+                    "venue": "Galaxy Tower, Praterstra\u00dfe 31, 1020 Vienna (World Bank office, Room 21-5)",
+                    "sessions": [
+                        {"time": "09:30", "title": "Climate-informed PIM: Regional Survey Presentation"},
+                        {
+                            "time": "10:30", "title": "Regional Experience Highlights",
+                            "description": [
+                                "Albania: PIM Curriculum and Single Pipeline",
+                                "Georgia: Green Budgeting and ePIM",
+                                "Serbia: Real Property Valuation",
+                                "North Macedonia: Public Investment Management and Performance Audit",
+                            ],
+                        },
+                        {"time": "11:45", "title": "Priorities for 2025: Building a Community of Progress"},
+                        {"time": "12:15", "title": "Next Steps"},
+                    ],
+                },
+            ],
+            "notes": [
+                "Participants should bring laptops or relevant devices to the workshops.",
+                "Printed versions of suggested readings and presentations were not provided at the event.",
+            ],
+            "organizers": "This PFM4CA learning event was organised by the Austrian School of Government (ASG) and the World Bank. Supported by the Financial Management Umbrella Program (FMUP) and the European Union (EU), with technical assistance from the Western Balkans Enhancing Infrastructure Governance (EIG) programme.",
+        },
+    },
+    {
+        "slug": "pfm4ca-launch-event-2024",
+        "title": "Public Financial Management for Climate Action Network (PFM4CA) \u2014 Launch Event",
+        "date": "2024-05-27",
+        "dateLabel": "May 27, 2024",
+        "location": "Online",
+        "format": "virtual",
+        "description": "The launch event for the Europe and Central Asia PFM4CA network \u2014 a collaborative platform for sharing insights and priorities for strengthening public financial management and advancing climate-smart policies.",
+        "detailsHref": "https://pfm4ca.com/eca-pfm4ca-network-launch-event/",
+        "detail": {
+            "aboutParagraphs": [
+                "This event marked the launch of the Europe and Central Asia (ECA) PFM4CA network, a collaborative platform for sharing insights, experiences and priorities for strengthening public financial management's core practices and advancing to climate-smart policies and practices.",
+                "A core focus of the network and this event was public investment and asset management \u2014 recognising the critical role that infrastructure investment decisions play in green transition trajectories.",
+                "The event convened senior government officials from the ECA region, alongside international development partners and experts. Policies and practices from the Western Balkans, Caucasus, and European Union countries were shared and discussed. It also presented the network's strategic objectives and planned activities, fostering a dialogue to align with the needs and expectations of World Bank counterparts.",
+            ],
+            "agenda": [
+                {
+                    "sessions": [
+                        {"time": "08:45\u201309:00", "title": "Login / Registration"},
+                        {"time": "09:00\u201310:15", "title": "Overview Session: Public Financial Management for Climate Action"},
+                        {"time": "10:15\u201310:35", "title": "PIM in EU Member States"},
+                        {"time": "10:35\u201311:20", "title": "Sharing Experiences"},
+                        {"time": "11:20\u201312:05", "title": "Panel Discussion"},
+                        {"time": "12:05\u201312:15", "title": "Wrap Up and Next Steps"},
+                    ],
+                },
+            ],
+        },
+    },
+]
+
+# ──────────────────────────────────────────────────────────────────────────
+# GREENING DEVELOPMENT PAGE  (app/greening-development/page.tsx)
+# ──────────────────────────────────────────────────────────────────────────
+GREENING_FRAMEWORK_CARDS = [
+    {
+        "icon": "greening_legislative",
+        "title": "Legislative & Regulatory Alignment",
+        "desc": "Supporting countries to design and implement legislation, regulations, and expenditure policies that drive greening development outcomes at national and sub-national levels.",
+    },
+    {
+        "icon": "greening_institutional",
+        "title": "Institutional Capacity Building",
+        "desc": "Strengthening the capabilities of national, sub-national, and SOE institutions through targeted skills development, organisational reform, and peer-learning networks.",
+    },
+    {
+        "icon": "greening_digital",
+        "title": "Digital Systems & Innovation",
+        "desc": "Modernising information management systems and harnessing big data, AI, and digital tools to support better climate planning, investment budgeting, and results reporting.",
+    },
+    {
+        "icon": "greening_results",
+        "title": "Results & Implementation",
+        "desc": "Accelerating implementation and tracking progress against country-level greening development targets, with structured monitoring frameworks aligned to climate action goals.",
     },
 ]
 

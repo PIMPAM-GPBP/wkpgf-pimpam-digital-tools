@@ -16,7 +16,7 @@ from datetime import datetime
 from dash import html, dcc
 
 from constants import (
-    COLORS, ICONS_FILL, ICONS_STROKE, NAV_LINKS, FOOTER_TOOL_LINKS,
+    COLORS, ICONS_FILL, ICONS_STROKE, NAV_TOP_LINKS, NAV_RESOURCES_ITEMS, FOOTER_TOOL_LINKS,
     FOOTER_OTHER_LINKS, DIMENSIONS_8, CAROUSEL_AREAS, CAROUSEL_DIMENSIONS,
     MATURITY_LEVELS, CARD_SCROLL_STEP,
 )
@@ -154,29 +154,71 @@ def SectionHeading(heading, eyebrow=None, subheading=None, centered=False,
 # ──────────────────────────────────────────────────────────────────────────
 
 def NavBar():
-    desktop_links = []
-    mobile_links = []
-    for link in NAV_LINKS:
+    def _top_link(link, mobile=False):
         badge = None
         if link.get("badge"):
             badge = html.Span(
                 link["badge"],
                 className="inline-block text-[10px] font-bold uppercase tracking-wide bg-accent4 text-white px-1.5 py-0.5 rounded-full leading-none",
             )
-        desktop_links.append(
-            dcc.Link(
-                [link["label"], badge] if badge else link["label"],
-                href=link["href"],
+        cls = (
+            "flex items-center gap-2 px-4 py-3 text-sm font-medium text-muted hover:text-text rounded hover:bg-white/5 transition-colors"
+            if mobile else
+            "relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted hover:text-text transition-colors duration-200 rounded hover:bg-white/5"
+        )
+        return dcc.Link([link["label"], badge] if badge else link["label"], href=link["href"], className=cls)
+
+    desktop_links = [_top_link(link) for link in NAV_TOP_LINKS]
+    mobile_links = [_top_link(link, mobile=True) for link in NAV_TOP_LINKS]
+
+    # ── Resources dropdown (desktop: click-to-open panel; mobile: inline
+    #    expandable section). Mirrors Nav.tsx's useState-driven dropdown —
+    #    here it's plain vanilla JS (see the initResourcesDropdown() init
+    #    function in app.py's index_string), same pattern as the mobile
+    #    menu toggle just above it.
+    resources_panel_items = [
+        dcc.Link(
+            item["label"], href=item["href"],
+            className="block px-4 py-2.5 text-sm font-medium text-muted hover:text-text hover:bg-white/5 rounded transition-colors",
+        )
+        for item in NAV_RESOURCES_ITEMS
+    ]
+
+    desktop_resources = html.Div(
+        className="relative",
+        children=[
+            html.Button(
+                ["Resources", Icon("chevron_down", size=15, color="#8A93A8", className="transition-transform duration-200", style={"marginLeft": "2px"})],
+                id="nav-resources-btn",
+                n_clicks=0,
                 className="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted hover:text-text transition-colors duration-200 rounded hover:bg-white/5",
-            )
-        )
-        mobile_links.append(
-            dcc.Link(
-                [link["label"], badge] if badge else link["label"],
-                href=link["href"],
-                className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-muted hover:text-text rounded hover:bg-white/5 transition-colors",
-            )
-        )
+                **{"aria-expanded": "false", "aria-haspopup": "true"},
+            ),
+            html.Div(
+                resources_panel_items,
+                id="nav-resources-menu",
+                className="hidden absolute top-full left-0 mt-1 w-56 bg-surface border border-white/10 rounded shadow-2xl py-2 z-50",
+            ),
+        ],
+    )
+
+    mobile_resources = html.Div(
+        className="flex flex-col",
+        children=[
+            html.Button(
+                ["Resources", Icon("chevron_down", size=15, color="#8A93A8", className="transition-transform duration-200")],
+                id="nav-mobile-resources-btn",
+                n_clicks=0,
+                className="flex items-center justify-between gap-2 px-4 py-3 text-sm font-medium text-muted hover:text-text rounded hover:bg-white/5 transition-colors",
+                **{"aria-expanded": "false"},
+            ),
+            html.Div(
+                resources_panel_items,
+                id="nav-mobile-resources-menu",
+                className="hidden flex-col pl-4 border-l border-white/5 ml-4 mb-1",
+            ),
+        ],
+    )
 
     return html.Header(
         id="site-nav",
@@ -196,7 +238,7 @@ def NavBar():
                             href="?page=home",
                             className="flex items-center",
                         ),
-                        html.Nav(desktop_links, className="hidden lg:flex items-center gap-1"),
+                        html.Nav(desktop_links + [desktop_resources], className="hidden lg:flex items-center gap-1"),
                         html.Button(
                             Icon("menu", size=20, color="#8A93A8"),
                             id="nav-mobile-btn",
@@ -210,7 +252,7 @@ def NavBar():
             html.Div(
                 id="nav-mobile-menu",
                 className="lg:hidden bg-surface/95 backdrop-blur-md border-b border-white/5 hidden",
-                children=html.Nav(mobile_links, className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"),
+                children=html.Nav(mobile_links + [mobile_resources], className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"),
             ),
         ],
     )
@@ -881,3 +923,153 @@ def SupportedByCarousel(logos):
         },
         children=html.Div(_pass("p0") + _pass("p1"), className="flex items-center animate-scroll-logos", style={"width": "max-content"}),
     )
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# EventCard  (app/events/page.tsx + home page "Explore Events" section —
+#   the original JSX repeats this same card markup in both places, so it's
+#   factored into one helper here with a `compact` flag for the smaller
+#   home-page variant.)
+# ──────────────────────────────────────────────────────────────────────────
+
+def _is_upcoming(iso_date):
+    from datetime import date
+    try:
+        y, m, d = (int(p) for p in iso_date.split("-"))
+        return date(y, m, d) >= date.today()
+    except (ValueError, TypeError):
+        return False
+
+
+def EventCard(event, compact=False):
+    """app/events/page.tsx + the home page 'Explore Events' section share
+    this exact card markup (image background, gradient overlay, Upcoming
+    badge, arrow icon, title + date/location) — `compact` selects the
+    smaller home-page sizing (min-h-300 / text-lg / gap-5 grid-cols-3)
+    vs. the full listing-page sizing (min-h-380 / text-2xl)."""
+    upcoming = _is_upcoming(event["date"])
+    badge = None
+    if upcoming:
+        badge = html.Div(
+            html.Span("Upcoming", className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent2 text-white"),
+            className=f"absolute {'top-4 left-4' if compact else 'top-5 left-5'}",
+        )
+    meta = html.Div(
+        className=("flex flex-wrap gap-x-3 gap-y-1" if compact else "flex flex-wrap gap-x-4 gap-y-1"),
+        children=[
+            html.Div([Icon("calendar", size=11 if compact else 13, color=COLORS["accent2"], className="flex-shrink-0"),
+                      html.Span(event.get("dateLabel") or event["date"])],
+                     className=f"flex items-center gap-1.5 text-{'xs' if compact else 'sm'} text-white/70"),
+        ] + ([html.Div([Icon("map_pin", size=11 if compact else 13, color=COLORS["accent2"], className="flex-shrink-0"),
+                        html.Span(event["location"])],
+                       className=f"flex items-center gap-1.5 text-{'xs' if compact else 'sm'} text-white/70")] if event.get("location") else []),
+    )
+    return dcc.Link(
+        [
+            html.Div(className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105",
+                      style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"}),
+            html.Div(className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10"),
+            badge,
+            html.Div(Icon("arrow", size=24 if compact else 32, color="#FFFFFF"),
+                      className=f"absolute {'top-4 right-4' if compact else 'top-5 right-5'} text-white"),
+            html.Div([
+                html.H3(event["title"], className=f"{'text-lg' if compact else 'text-2xl'} font-bold text-white leading-snug"),
+                meta,
+            ], className=f"relative {'p-5 space-y-2' if compact else 'p-6 space-y-3'}"),
+        ],
+        href=f'?page=events&slug={event["slug"]}',
+        className=f"group relative flex flex-col justify-end rounded-xl overflow-hidden {'min-h-[300px]' if compact else 'min-h-[380px]'} focus:outline-none focus-visible:ring-2 focus-visible:ring-accent1",
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# AgendaAccordion.tsx  (app/events/[slug]/page.tsx — per-session accordion)
+#   Implemented with native <details>/<summary> so opening/closing a
+#   session needs zero Dash callbacks or custom JS for the open/close
+#   mechanic itself. All <details> in one event share a
+#   `data-accordion-group` value; a small JS listener (initAgendaAccordions()
+#   in app.py's index_string) closes any other open item in the same group
+#   when one opens, via the native "toggle" event — this reproduces the
+#   original single `open` state (only one session expanded at a time)
+#   without needing a Dash callback per row.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _session_has_detail(session):
+    return bool(session.get("description") or session.get("moderator") or session.get("speakers") or session.get("output") or session.get("outcome"))
+
+
+def _session_detail_body(session):
+    children = []
+    if session.get("moderator"):
+        children.append(html.P([html.Span("Moderator: ", className="font-semibold text-gray-600"), session["moderator"]], className="text-xs text-gray-500"))
+    if session.get("description"):
+        children.append(html.Ul([
+            html.Li([html.Span(className="mt-2 flex-shrink-0 w-1 h-1 rounded-full bg-accent2"), item],
+                    className="flex gap-2.5 text-sm text-gray-600 leading-relaxed")
+            for item in session["description"]
+        ], className="space-y-2 pt-2"))
+    if session.get("speakers"):
+        children.append(html.Div([
+            html.P("Speakers", className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"),
+            html.Ul([html.Li(s, className="text-sm text-gray-600") for s in session["speakers"]], className="space-y-1"),
+        ], className="pt-1"))
+    if session.get("output") or session.get("outcome"):
+        cols = []
+        if session.get("output"):
+            cols.append(html.Div([
+                html.P("Output", className="text-xs font-semibold text-accent2 uppercase tracking-wide mb-1"),
+                html.P(session["output"], className="text-sm text-gray-600 leading-relaxed"),
+            ], className="rounded bg-accent2/5 border border-accent2/15 p-3"))
+        if session.get("outcome"):
+            cols.append(html.Div([
+                html.P("Outcome", className="text-xs font-semibold text-accent1 uppercase tracking-wide mb-1"),
+                html.P(session["outcome"], className="text-sm text-gray-600 leading-relaxed"),
+            ], className="rounded bg-accent1/5 border border-accent1/15 p-3"))
+        children.append(html.Div(cols, className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2"))
+    return html.Div(children, className="px-5 pt-5 pb-5 border-t border-gray-100 bg-gray-50 space-y-4")
+
+
+def _session_row(session, group_name):
+    time_label = html.Span(session["time"], className="flex-shrink-0 w-20 text-xs font-mono text-accent2 font-semibold")
+    title_label = html.Span(session["title"], className="flex-1 text-sm font-semibold text-gray-900")
+
+    if not _session_has_detail(session):
+        return html.Div(
+            html.Div([time_label, title_label], className="w-full flex items-center gap-4 px-5 py-4 text-left cursor-default"),
+            className="bg-white",
+        )
+
+    return html.Details(
+        [
+            html.Summary(
+                [time_label, title_label, Icon("chevron_down", size=16, color="#9CA3AF", className="agenda-chevron flex-shrink-0 transition-transform duration-200")],
+                className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 cursor-pointer select-none list-none",
+            ),
+            _session_detail_body(session),
+        ],
+        className="bg-white",
+        **{"data-accordion-group": group_name},
+    )
+
+
+def AgendaAccordion(sections, group_name="agenda-accordion"):
+    section_blocks = []
+    for si, section in enumerate(sections):
+        header = None
+        if section.get("day"):
+            venue_el = None
+            if section.get("venue"):
+                venue_el = html.P([Icon("map_pin", size=12, color="#9CA3AF"), " ", section["venue"]],
+                                   className="text-sm text-gray-400 mt-1 flex items-center gap-1.5")
+            header = html.Div([
+                html.H3(section["day"], className="text-base font-bold text-gray-900"),
+                venue_el,
+            ], className="mb-4")
+
+        rows = html.Div(
+            [_session_row(s, group_name) for s in section["sessions"]],
+            className="divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden",
+        )
+        section_blocks.append(html.Div([header, rows] if header else [rows], key=str(si)))
+
+    return html.Div(section_blocks, className="space-y-10")
