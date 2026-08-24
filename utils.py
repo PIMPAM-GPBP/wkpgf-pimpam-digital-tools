@@ -1001,29 +1001,29 @@ def _session_has_detail(session):
 def _session_detail_body(session):
     children = []
     if session.get("moderator"):
-        children.append(html.P([html.Span("Moderator: ", className="font-semibold text-gray-600"), session["moderator"]], className="text-xs text-gray-500"))
+        children.append(html.P([html.Span("Moderator: ", className="font-semibold text-gray-500"), session["moderator"]], className="text-xs text-gray-500"))
     if session.get("description"):
         children.append(html.Ul([
             html.Li([html.Span(className="mt-2 flex-shrink-0 w-1 h-1 rounded-full bg-accent2"), item],
-                    className="flex gap-2.5 text-sm text-gray-600 leading-relaxed")
+                    className="flex gap-2.5 text-sm text-gray-500 leading-relaxed")
             for item in session["description"]
         ], className="space-y-2 pt-2"))
     if session.get("speakers"):
         children.append(html.Div([
             html.P("Speakers", className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"),
-            html.Ul([html.Li(s, className="text-sm text-gray-600") for s in session["speakers"]], className="space-y-1"),
+            html.Ul([html.Li(s, className="text-sm text-gray-500") for s in session["speakers"]], className="space-y-1"),
         ], className="pt-1"))
     if session.get("output") or session.get("outcome"):
         cols = []
         if session.get("output"):
             cols.append(html.Div([
                 html.P("Output", className="text-xs font-semibold text-accent2 uppercase tracking-wide mb-1"),
-                html.P(session["output"], className="text-sm text-gray-600 leading-relaxed"),
+                html.P(session["output"], className="text-sm text-gray-500 leading-relaxed"),
             ], className="rounded bg-accent2/5 border border-accent2/15 p-3"))
         if session.get("outcome"):
             cols.append(html.Div([
                 html.P("Outcome", className="text-xs font-semibold text-accent1 uppercase tracking-wide mb-1"),
-                html.P(session["outcome"], className="text-sm text-gray-600 leading-relaxed"),
+                html.P(session["outcome"], className="text-sm text-gray-500 leading-relaxed"),
             ], className="rounded bg-accent1/5 border border-accent1/15 p-3"))
         children.append(html.Div(cols, className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2"))
     return html.Div(children, className="px-5 pt-5 pb-5 border-t border-gray-100 bg-gray-50 space-y-4")

@@ -755,7 +755,7 @@ def greening_development_page():
                             html.P("Tackling greening development challenges and unlocking opportunities for green growth and climate action requires individual countries to design and implement policies that align with their unique development contexts."),
                             html.P("Beyond central government, sub-national authorities and state-owned enterprises (SOEs) also need to be engaged. Their participation is essential for scaling climate action from policy design through to on-the-ground implementation."),
                             html.P("Three factors are critical for success: country demand and ownership; strong organisational capabilities and skilled public sector staff; and modernised, digital information systems \u2014 harnessing innovations like big data and artificial intelligence."),
-                        ], className="space-y-4 text-gray-600 leading-relaxed"),
+                        ], className="space-y-4 text-gray-500 leading-relaxed"),
                         html.Div(
                             html.A("Engagement Framework", href="#framework",
                                    className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 font-semibold hover:bg-accent1 hover:text-white transition-colors"),
@@ -827,7 +827,7 @@ def greening_development_page():
                 html.Div([
                     html.P("The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region."),
                     html.P("The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies."),
-                ], className="space-y-4 text-gray-600 leading-relaxed"),
+                ], className="space-y-4 text-gray-500 leading-relaxed"),
             ], className="max-w-3xl"),
         ),
     )
@@ -866,7 +866,7 @@ def greening_development_page():
                         html.Div([
                             html.P("Infrastructure investment decisions carry long-term implications. Failing to account for climate risk in planning and budgeting cycles leads to stranded assets, increased fiscal exposure, and missed opportunities for sustainable development."),
                             html.P("The VDKC approach integrates people, processes, and technology to embed climate considerations into public investment management \u2014 from project appraisal through to asset lifecycle management and performance reporting."),
-                        ], className="space-y-4 text-gray-600 leading-relaxed"),
+                        ], className="space-y-4 text-gray-500 leading-relaxed"),
                     ]),
                 ],
             ),
@@ -967,9 +967,9 @@ def event_detail_page(slug):
     )
 
     hero = html.Section(
-        className="pt-40 pb-14 relative overflow-hidden bg-bg",
+        className="pt-56 pb-28 min-h-[500px] relative overflow-hidden bg-bg",
         children=[
-            html.Div(className="absolute inset-0 bg-cover bg-center opacity-25",
+            html.Div(className="absolute inset-0 bg-[length:120%] bg-center opacity-25",
                       style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"}),
             html.Div(className="absolute inset-0 bg-gradient-to-b from-bg/60 via-bg/40 to-bg/80"),
             GridOverlay(),
@@ -998,17 +998,17 @@ def event_detail_page(slug):
 
     sections.append(html.Section([
         html.H2("About the Event", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
-        html.Div([html.P(p) for p in detail.get("aboutParagraphs", [])], className="space-y-4 text-gray-600 leading-relaxed"),
+        html.Div([html.P(p) for p in detail.get("aboutParagraphs", [])], className="space-y-4 text-gray-500 leading-relaxed"),
     ]))
 
     if detail.get("objectivesIntro") or detail.get("objectives"):
         obj_children = [html.H2("Objectives & Target Audience", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5")]
         if detail.get("objectivesIntro"):
-            obj_children.append(html.P(detail["objectivesIntro"], className="text-gray-600 leading-relaxed mb-5"))
+            obj_children.append(html.P(detail["objectivesIntro"], className="text-gray-500 leading-relaxed mb-5"))
         if detail.get("objectives"):
             obj_children.append(html.Ul([
                 html.Li([html.Span(className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent2"), obj],
-                        className="flex gap-3 text-gray-600 leading-relaxed")
+                        className="flex gap-3 text-gray-500 leading-relaxed")
                 for obj in detail["objectives"]
             ], className="space-y-3"))
         sections.append(html.Section(obj_children))
@@ -1016,7 +1016,7 @@ def event_detail_page(slug):
     if detail.get("format"):
         sections.append(html.Section([
             html.H2("Format", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
-            html.P(detail["format"], className="text-gray-600 leading-relaxed"),
+            html.P(detail["format"], className="text-gray-500 leading-relaxed"),
         ]))
 
     if detail.get("summary"):
@@ -1024,7 +1024,7 @@ def event_detail_page(slug):
         for sec in detail["summary"]:
             summary_children.append(html.Div([
                 html.H3(sec["title"], className="text-lg font-bold text-gray-900 mb-3"),
-                html.Div([html.P(p) for p in sec["paragraphs"]], className="space-y-3 text-gray-600 leading-relaxed"),
+                html.Div([html.P(p) for p in sec["paragraphs"]], className="space-y-3 text-gray-500 leading-relaxed"),
             ]))
         sections.append(html.Section(summary_children, className="space-y-8"))
 
@@ -1050,7 +1050,7 @@ def event_detail_page(slug):
             html.H2("Please Note", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4"),
             html.Ul([
                 html.Li([html.Span(className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-gray-400"), note],
-                        className="flex gap-3 text-sm text-gray-600")
+                        className="flex gap-3 text-sm text-gray-500")
                 for note in detail["notes"]
             ], className="space-y-2"),
         ], className="rounded-lg bg-gray-50 border border-gray-200 p-6"))
