@@ -163,6 +163,16 @@ a { text-decoration: none; color: inherit; }
    (ToolList.tsx used translate-x-full / translate-x-0 + opacity toggles —
    reproduced 1:1 using the same Tailwind transform utilities in app.py, this
    just guarantees the drawer sits above everything and clips correctly) */
+.greening-how-it-works {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.greening-how-it-works-card {
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.18);
+}
+
 #tool-drawer {
   will-change: transform;
 }

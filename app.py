@@ -818,18 +818,43 @@ def greening_development_page():
     )
 
     how_it_works = html.Section(
-        className="py-20 bg-gray-50",
-        children=html.Div(
-            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-            children=html.Div([
-                _greening_label("How It Works"),
-                html.H2("How does it work?", className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"),
-                html.Div([
-                    html.P("The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region."),
-                    html.P("The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies."),
-                ], className="space-y-4 text-gray-500 leading-relaxed"),
-            ], className="max-w-3xl"),
-        ),
+        className="greening-how-it-works relative overflow-hidden border-y border-white/10",
+        style={
+            "backgroundImage": f"url('{asset('images/greening/how-it-works-bg.jpg')}')",
+            "backgroundSize": "cover",
+            "backgroundPosition": "center center",
+            "backgroundRepeat": "no-repeat",
+            "paddingTop": "72px",
+            "paddingBottom": "72px",
+        },
+        children=[
+            html.Div(className="absolute inset-0", style={"background": "rgba(5, 12, 18, 0.28)"}),
+            html.Div(
+                className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center",
+                children=html.Div(
+                    className="greening-how-it-works-card w-full max-w-4xl rounded-[28px] border border-white/30 px-8 py-10 sm:px-10 sm:py-12",
+                    style={
+                        "background": "rgba(239, 244, 241, 0.74)",
+                        "backdropFilter": "blur(8px)",
+                        "WebkitBackdropFilter": "blur(8px)",
+                    },
+                    children=[
+                        _greening_label("How It Works"),
+                        html.H2("How does it work?", className="text-3xl sm:text-4xl lg:text-[3rem] font-bold text-gray-900 mb-6"),
+                        html.Div([
+                            html.P(
+                                "The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region.",
+                                className="text-gray-700 leading-relaxed text-lg sm:text-xl",
+                            ),
+                            html.P(
+                                "The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies.",
+                                className="text-gray-700 leading-relaxed text-lg sm:text-xl",
+                            ),
+                        ], className="space-y-5"),
+                    ],
+                ),
+            ),
+        ],
     )
 
     results_framework = html.Section(
