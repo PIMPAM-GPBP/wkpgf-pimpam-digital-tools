@@ -216,3 +216,7 @@ details > summary::marker {
 details[open] > summary .agenda-chevron {
   transform: rotate(180deg);
 }
+
+.greening-how-it-works-card {
+  -webkit-backdrop-filter: blur(12px);
+}

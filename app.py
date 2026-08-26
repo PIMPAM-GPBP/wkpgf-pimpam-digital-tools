@@ -824,34 +824,43 @@ def greening_development_page():
             "backgroundSize": "cover",
             "backgroundPosition": "center center",
             "backgroundRepeat": "no-repeat",
-            "paddingTop": "72px",
-            "paddingBottom": "72px",
+            "paddingTop": "96px",
+            "paddingBottom": "96px",
+            "minHeight": "560px",
         },
         children=[
             html.Div(className="absolute inset-0", style={"background": "rgba(5, 12, 18, 0.28)"}),
             html.Div(
                 className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center",
                 children=html.Div(
-                    className="greening-how-it-works-card w-full max-w-4xl border border-white/30 px-10 py-10 sm:px-12 sm:py-12",
+                    className="greening-how-it-works-card w-full max-w-3xl border border-white/30 px-10 py-10 sm:px-14 sm:py-12",
                     style={
-                        "background": "rgba(239, 244, 241, 0.74)",
+                        "background": "rgba(239, 244, 241, 0.84)",
                         "backdropFilter": "blur(8px)",
                         "WebkitBackdropFilter": "blur(8px)",
-                        "borderRadius": "20px",
+                        "borderRadius": "12px",
+                        "paddingLeft": "40px",
+                        "paddingRight": "40px",
                     },
                     children=[
                         _greening_label("How It Works"),
-                        html.H2("How does it work?", className="text-2xl sm:text-3xl lg:text-[2.5rem] font-bold text-gray-900 mb-8 leading-tight"),
-                        html.Div([
-                            html.P(
-                                "The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region.",
-                                className="text-gray-700 leading-relaxed text-base sm:text-lg text-left",
-                            ),
-                            html.P(
-                                "The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies.",
-                                className="text-gray-700 leading-relaxed text-base sm:text-lg text-left",
-                            ),
-                        ], className="space-y-6"),
+                        html.H2(
+                            "How does it work?",
+                            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6",
+                        ),
+                        html.Div(
+                            [
+                                html.P(
+                                    "The foundational departure point of the VDKC Engagement Framework is that national, sub-national, and SOE institutional sectors are all critical to delivering on greening development across the ECA region.",
+                                    className="text-gray-700 leading-relaxed text-base sm:text-lg text-left",
+                                ),
+                                html.P(
+                                    "The outcome framework builds on the premise that a combination of taxation, expenditure, and regulatory measures can help deliver climate action and green growth objectives. The public sector depends on adequate policies, but above all the capabilities to deliver on those policies.",
+                                    className="text-gray-700 leading-relaxed text-base sm:text-lg text-left",
+                                ),
+                            ],
+                            className="space-y-5 text-gray-700 leading-relaxed",
+                        ),
                     ],
                 ),
             ),
