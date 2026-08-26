@@ -179,7 +179,7 @@ def NavBar():
     resources_panel_items = [
         dcc.Link(
             item["label"], href=item["href"],
-            className="block px-4 py-2.5 text-sm font-medium text-muted hover:text-text hover:bg-white/5 rounded transition-colors",
+            className="block px-4 py-3 text-base font-medium text-muted hover:text-text hover:bg-white/5 rounded transition-colors whitespace-nowrap",
         )
         for item in NAV_RESOURCES_ITEMS
     ]
@@ -197,7 +197,7 @@ def NavBar():
             html.Div(
                 resources_panel_items,
                 id="nav-resources-menu",
-                className="hidden absolute top-full left-0 mt-1 w-56 bg-surface border border-white/10 rounded shadow-2xl py-2 z-50",
+                className="hidden absolute top-full left-0 mt-1 w-64 bg-surface border border-white/10 rounded shadow-2xl py-2 z-50",
             ),
         ],
     )
