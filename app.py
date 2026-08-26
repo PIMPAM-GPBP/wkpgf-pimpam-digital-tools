@@ -982,7 +982,7 @@ def event_detail_page(slug):
                 },
             ),
             html.Div(className="absolute inset-0", style={
-                "background": "linear-gradient(180deg, rgba(8, 12, 19, 0.80) 0%, rgba(8, 12, 19, 0.62) 60%, rgba(8, 12, 19, 0.86) 100%)"
+                "background": "linear-gradient(180deg, rgba(8, 12, 19, 0.80) 95%, rgba(8, 12, 19, 0.62) 95%, rgba(8, 12, 19, 0.86) 95%)"
             }),
             GridOverlay(),
             html.Div(
