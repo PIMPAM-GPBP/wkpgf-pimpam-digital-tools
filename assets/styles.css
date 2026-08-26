@@ -188,3 +188,21 @@ a { text-decoration: none; color: inherit; }
   cursor: grabbing !important;
   user-select: none;
 }
+
+/* AgendaAccordion (event detail page) — strip the native <details> marker
+   so our own chevron icon is the only expand/collapse indicator, and
+   rotate that chevron when a session is open. Lives here (a real static
+   file) rather than only as a Tailwind class, since it doesn't depend on
+   Tailwind's Play CDN finishing its compile before it applies. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details > summary::marker {
+  content: "";
+}
+details[open] > summary .agenda-chevron {
+  transform: rotate(180deg);
+}

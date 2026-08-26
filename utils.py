@@ -942,46 +942,65 @@ def _is_upcoming(iso_date):
 
 
 def EventCard(event, compact=False):
-    """app/events/page.tsx + the home page 'Explore Events' section share
-    this exact card markup (image background, gradient overlay, Upcoming
-    badge, arrow icon, title + date/location) — `compact` selects the
-    smaller home-page sizing (min-h-300 / text-lg / gap-5 grid-cols-3)
-    vs. the full listing-page sizing (min-h-380 / text-2xl)."""
     upcoming = _is_upcoming(event["date"])
+    min_h = 300 if compact else 380
+    badge_pos = 16 if compact else 20  # px, matches top-4 / top-5
+    title_size = "1.125rem" if compact else "1.5rem"  # text-lg / text-2xl
+    pad = "1.25rem" if compact else "1.5rem"  # p-5 / p-6
+ 
     badge = None
     if upcoming:
         badge = html.Div(
             html.Span("Upcoming", className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent2 text-white"),
-            className=f"absolute {'top-4 left-4' if compact else 'top-5 left-5'}",
+            style={"position": "absolute", "top": f"{badge_pos}px", "left": f"{badge_pos}px"},
         )
-    meta = html.Div(
-        className=("flex flex-wrap gap-x-3 gap-y-1" if compact else "flex flex-wrap gap-x-4 gap-y-1"),
-        children=[
-            html.Div([Icon("calendar", size=11 if compact else 13, color=COLORS["accent2"], className="flex-shrink-0"),
-                      html.Span(event.get("dateLabel") or event["date"])],
-                     className=f"flex items-center gap-1.5 text-{'xs' if compact else 'sm'} text-white/70"),
-        ] + ([html.Div([Icon("map_pin", size=11 if compact else 13, color=COLORS["accent2"], className="flex-shrink-0"),
-                        html.Span(event["location"])],
-                       className=f"flex items-center gap-1.5 text-{'xs' if compact else 'sm'} text-white/70")] if event.get("location") else []),
-    )
+ 
+    meta_items = [
+        html.Div(
+            [Icon("calendar", size=13, color=COLORS["accent2"], className="flex-shrink-0"),
+             html.Span(event.get("dateLabel") or event["date"])],
+            className="flex items-center gap-1.5 text-sm text-white/70",
+        ),
+    ]
+    if event.get("location"):
+        meta_items.append(html.Div(
+            [Icon("map_pin", size=13, color=COLORS["accent2"], className="flex-shrink-0"),
+             html.Span(event["location"])],
+            className="flex items-center gap-1.5 text-sm text-white/70",
+        ))
+ 
     return dcc.Link(
         [
-            html.Div(className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105",
-                      style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"}),
+            html.Div(
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105",
+                style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"},
+            ),
             html.Div(className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10"),
             badge,
-            html.Div(Icon("arrow", size=24 if compact else 32, color="#FFFFFF"),
-                      className=f"absolute {'top-4 right-4' if compact else 'top-5 right-5'} text-white"),
-            html.Div([
-                html.H3(event["title"], className=f"{'text-lg' if compact else 'text-2xl'} font-bold text-white leading-snug"),
-                meta,
-            ], className=f"relative {'p-5 space-y-2' if compact else 'p-6 space-y-3'}"),
+            html.Div(
+                Icon("arrow", size=24 if compact else 32, color="#FFFFFF"),
+                style={"position": "absolute", "top": f"{badge_pos}px", "right": f"{badge_pos}px", "color": "#FFFFFF"},
+            ),
+            html.Div(
+                [
+                    html.H3(event["title"], style={"fontSize": title_size}, className="font-bold text-white leading-snug"),
+                    html.Div(meta_items, className="flex flex-wrap gap-x-4 gap-y-1"),
+                ],
+                style={"position": "relative", "padding": pad},
+                className="space-y-3",
+            ),
         ],
         href=f'?page=events&slug={event["slug"]}',
-        className=f"group relative flex flex-col justify-end rounded-xl overflow-hidden {'min-h-[300px]' if compact else 'min-h-[380px]'} focus:outline-none focus-visible:ring-2 focus-visible:ring-accent1",
+        className="group rounded-xl overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent1",
+        style={
+            "position": "relative",
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "flex-end",
+            "minHeight": f"{min_h}px",
+        },
     )
-
-
+ 
 # ──────────────────────────────────────────────────────────────────────────
 # AgendaAccordion.tsx  (app/events/[slug]/page.tsx — per-session accordion)
 #   Implemented with native <details>/<summary> so opening/closing a

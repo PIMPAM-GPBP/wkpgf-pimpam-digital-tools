@@ -967,11 +967,23 @@ def event_detail_page(slug):
     )
 
     hero = html.Section(
-        className="pt-56 pb-28 min-h-[500px] relative overflow-hidden bg-bg",
+        className="relative overflow-hidden bg-bg",
+        style={"paddingTop": "160px", "paddingBottom": "56px"},  # pt-40 / pb-14
         children=[
-            html.Div(className="absolute inset-0 bg-[length:120%] bg-center opacity-25",
-                      style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"}),
-            html.Div(className="absolute inset-0 bg-gradient-to-b from-bg/60 via-bg/40 to-bg/80"),
+            html.Div(
+                className="absolute inset-0",
+                style={
+                    "backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')",
+                    "backgroundColor": "#0A0E1A",
+                    "backgroundSize": "cover",
+                    "backgroundPosition": "center center",
+                    "backgroundRepeat": "no-repeat",
+                    "transform": "scale(1.08)",
+                },
+            ),
+            html.Div(className="absolute inset-0", style={
+                "background": "linear-gradient(180deg, rgba(8, 12, 19, 0.80) 0%, rgba(8, 12, 19, 0.62) 60%, rgba(8, 12, 19, 0.86) 100%)"
+            }),
             GridOverlay(),
             html.Div(
                 className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
