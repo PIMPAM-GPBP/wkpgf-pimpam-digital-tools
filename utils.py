@@ -972,10 +972,12 @@ def EventCard(event, compact=False):
     return dcc.Link(
         [
             html.Div(
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105",
+                className="absolute inset-0 bg-cover bg-center",
                 style={"backgroundImage": f"url('{asset('images/events/' + event['slug'] + '.jpg')}')"},
             ),
-            html.Div(className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10"),
+            html.Div(className="absolute inset-0", style={
+                "background": "linear-gradient(180deg, rgba(8, 12, 19, 0.12) 0%, rgba(8, 12, 19, 0.45) 42%, rgba(8, 12, 19, 0.82) 100%)"
+            }),
             badge,
             html.Div(
                 Icon("arrow", size=24 if compact else 32, color="#FFFFFF"),

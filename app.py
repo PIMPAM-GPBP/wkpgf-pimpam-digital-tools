@@ -417,7 +417,7 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="?page=digital-tools",
+                                dcc.Link(["Explore Tools ", IconArrow(size=80, color=C.COLORS["accent1"])], href="?page=digital-tools",
                                          className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
