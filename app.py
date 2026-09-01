@@ -27,7 +27,7 @@ from utils import (
     ToolListSection, ToolDrawerContent, vimeo_embed_url, BlogCard,
     format_date_long, VideoCard, VideoIframe, FeedbackFormFields,
     FeedbackThankYou, ResourceCard, ToolAreaCard, BroughtToYouByStrip,
-    SupportedByCarousel, EventCard, AgendaAccordion,
+    SupportedByCarousel, EventCard, AgendaAccordion, EcbaMethodologyNav,
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -280,6 +280,35 @@ app.index_string = f"""<!DOCTYPE html>
             }});
         }}
 
+        function initEcbaMethodologyNav() {{
+            // EcbaMethodologyNav.tsx — highlight the sidebar nav item for
+            // whichever section is currently in view, same rootMargin as
+            // the original's per-item IntersectionObserver.
+            var nav = document.getElementById('ecba-methodology-nav');
+            if (!nav || nav.__init) return;
+            nav.__init = true;
+            var links = nav.querySelectorAll('a[data-nav-target]');
+            if (!links.length) return;
+            function setActive(id) {{
+                links.forEach(function (a) {{
+                    var isActive = a.getAttribute('data-nav-target') === id;
+                    a.classList.toggle('text-accent1', isActive);
+                    a.classList.toggle('font-semibold', isActive);
+                    a.classList.toggle('text-gray-500', !isActive);
+                    a.classList.toggle('hover:text-accent1', !isActive);
+                }});
+            }}
+            var observer = new IntersectionObserver(function (entries) {{
+                entries.forEach(function (entry) {{
+                    if (entry.isIntersecting) setActive(entry.target.id);
+                }});
+            }}, {{ rootMargin: '-20% 0px -70% 0px', threshold: 0 }});
+            links.forEach(function (a) {{
+                var el = document.getElementById(a.getAttribute('data-nav-target'));
+                if (el) observer.observe(el);
+            }});
+        }}
+
         function initAll() {{
             initNavScroll();
             initMobileNav();
@@ -287,6 +316,7 @@ app.index_string = f"""<!DOCTYPE html>
             initCarousel();
             initRevealOnScroll();
             initAgendaAccordions();
+            initEcbaMethodologyNav();
         }}
 
         function scrollToHash() {{
@@ -550,6 +580,340 @@ def digital_tools_page():
         html.Section(
             className="pt-14 pb-24 bg-white",
             children=html.Div(ToolListSection(C.TOOL_FAMILIES, C.TOOLS), className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"),
+        ),
+    ])
+
+
+def _ecba_section(section_id, title, children):
+    """One <section id="..."> block of the eCBA Methodology article, with
+    the shared heading style used throughout page.tsx."""
+    return html.Section(
+        id=section_id,
+        className="mb-16",
+        children=[
+            html.H2(title, className="text-2xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100"),
+            *children,
+        ],
+    )
+
+
+def _ecba_bullets(items, tight=False):
+    return html.Ul(
+        [
+            html.Li([html.Span("•", className="text-accent1 flex-shrink-0 mt-0.5"), html.Span(item)],
+                    className="flex gap-2 text-sm text-gray-500 leading-relaxed")
+            for item in items
+        ],
+        className="space-y-1.5" if tight else "space-y-1.5 pl-4",
+    )
+
+
+def ecba_methodology_page():
+    hero = _hero_section(
+        "ecba-methodology-hero",
+        "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.22) 0%, transparent 65%)",
+        "eCBA", "eCBA Methodology",
+        "The methodology behind the Economic Cost-Benefit Analysis Tool — how financial and economic indicators are estimated, the underlying calculations, and the assumptions that drive them.",
+    )
+
+    # ── Introduction ────────────────────────────────────────────────────
+    introduction = _ecba_section("introduction", "Introduction", [
+        html.Div([
+            html.P("The eCBA tool is an online module that enables users to assess financial and economic feasibility of investment projects by utilizing aggregated primary input data series such as capital expenditures, operational costs, and revenue streams. As a result, users do not need expertise in financial modelling or proficiency in Excel to use the tool. By providing a standardized approach to appraisal and evaluation procedures, the tool can serve as a foundation for various applications — for example, supporting online public investment management (PIM) platforms or functioning as a repository, reporting, and record-management system for completed projects, rejected project concepts, and potential future undertakings."),
+            html.P("To ensure global applicability and relevance across diverse project types, the calculations have been standardized and streamlined to a certain degree. Project proponents are expected to provide financial and economic streams as input data in line with specific PIM process requirements. These include financial costs and revenues series, as well as economic benefits, costs, externalities, and non-market impacts. A general challenge in public investment CBA lies in identifying and monetizing appropriate data series. For example, a CBA may require estimating the monetized value of time savings, accident reduction, or reduced CO₂ emissions. Developing these series depends on various data sources and methods, particularly within the ‘without-the-project’ scenario and ‘with-the-project’ scenario framework. The eCBA tool does not resolve these methodological challenges but provides a more structured way to distil and present these valuations."),
+            html.P("The eCBA tool allows proponents to upload documentation explaining how different summary series were created (e.g., PDFs, Word, or Excel spreadsheets). While Excel provides greater flexibility for experienced users, it can be less transparent and less accessible for general users with limited time and capacity. The eCBA tool is not intended to replace all key steps or inputs for a cost-benefit analysis. Users remain responsible for generating the required input data based on calculations done outside the module (e.g. demand analyses used to project revenues or estimate economic benefits). Particularly larger complex projects may require bespoke tools and methods, and hence the eCBA tool could simply be used to record key aggregate values."),
+            html.P("A prerequisite for using the eCBA tool is transparent documentation of project components and their associated cost and benefit flows. The tool helps standardize the CBA process and clearly document assumptions and results. However, estimating actual benefits and costs must be done separately, and the basis for those calculations must be explained by the project proponent in the relevant input fields or supporting attachments. The eCBA module is not designed for conducting demand analyses or calculating economic benefits, costs, externalities and non-market impacts from scratch. Therefore, input data for financial and economic analyses must be prepared externally — often in Excel — before the aggregated annual values are entered into the eCBA tool. At this early stage of development, it is not feasible to provide a uniform framework for detailed, project-specific calculations without inadvertently favouring certain project types or requiring extensive sector- and country-specific data. Future releases may introduce additional modules allowing more calculations to be performed within the tool, potentially supported by databases of economic values (e.g., value of time, value of statistical life, shadow price of carbon) tailored to different country and sector contexts."),
+            html.P("The eCBA tool is designed to balance ease of use with the need to capture essential project details. A core objective is to ensure that all critical financial and economic data series are made explicit over the project’s life. However, the tool does not require users to enter every intermediate calculation step; these can be documented in supporting files. For financial analysis, the current eCBA requires users to separately enter BAU (variant 0) and with-project (variant 1) series (e.g., current and projected costs, current and future revenues where applicable). Economic costs, benefits, externalities, and non-market impacts are recorded only as incremental values (i.e., variant 1 only), primarily to keep the process simple. A future module could require users to enter both BAU and with-project economic series explicitly, thereby making incremental values more transparent."),
+            html.P("The tool is fully functional and continuously being improved, offering a flexible framework that can be used both for training purposes and as a source of inspiration for developing project assessment practices. Its underlying code is publicly available and can serve as a foundation for building national or country-specific project appraisal systems. While the tool enables rapid project validation by ministries of finance, it is most effective when integrated into a broader public investment management or budgeting system, as demonstrated in the case of Georgia."),
+            html.P([
+                "This document describes in detail the methodology behind the eCBA tool, including how the financial and economic indicators are estimated and the underlying calculations. The following sections reflect the structure of the eCBA module. The methodology behind the calculations in the eCBA tool is inspired by EU appraisal guidelines and other international documentation pertaining to the subject, such as ",
+                html.Em("Guide to Cost-Benefit Analysis of Investment Projects for Cohesion Policy 2014–2020"),
+                " and ",
+                html.Em("Economic Appraisal Vademecum 2021–2027"),
+                ".",
+            ]),
+        ], className="space-y-4 text-gray-600 leading-relaxed text-sm"),
+    ])
+
+    # ── Project Details ─────────────────────────────────────────────────
+    project_details = _ecba_section("project-details", "Project Details", [
+        html.Div([
+            html.P("This section captures the general administrative information about the project, including its name or title, a brief description, the sector in which the project will operate, and the time horizon of the analysis."),
+            html.P([html.Strong("Reference period", className="text-gray-800"), " indicates the overall lifespan of the project and includes both the investment as well as the operational phase. In other words, this is the period over which the financial and economic analyses are performed. The length of the reference period defines the time frame for which data must be entered, counted from the first year of the investment period (see ", html.Em("Start of investment period"), " below)."]),
+            html.P([html.Strong("Base year", className="text-gray-800"), " specifies in which year the analysis is conducted and directly affects the discounting calculations. The tool treats the selected base year as the current year and does not discount cash flows up to and including that year. This allows the tool to accommodate both historical projects and projects planned to start in the future. Base year should always be greater or equal to the Start of investment period."]),
+            html.P([html.Strong("Start of investment period", className="text-gray-800"), " indicates the first year in which costs related to project implementation are incurred. This year also marks the beginning of the project’s Reference period."]),
+            html.P([html.Strong("End of investment period", className="text-gray-800"), " identifies the last year in which capital expenditures are incurred before the project becomes operational, while ", html.Strong("Start of operation period", className="text-gray-800"), " marks the first year of the project’s operational phase and determines the first year in which depreciation begins to accumulate. The first year of the operation period should always be equal to or greater than the End of investment period."]),
+        ], className="space-y-4 text-gray-600 leading-relaxed text-sm"),
+    ])
+
+    # ── General Assumptions ─────────────────────────────────────────────
+    ga_intro = html.Div([
+        html.P("General assumptions define the setting, the environment in which a project is to take place. These include:"),
+        _ecba_bullets([
+            "Analysis assumptions (financial and social discount rates)",
+            "Fiscal adjustment coefficients (VAT and employment tax rates)",
+            "Depreciation factors for estimating residual value",
+            "Data types (Input and Output data types, Constant or Current prices)",
+            "Macroeconomic assumptions (inflation, projected real wage growth and projected nominal wage growth rates)",
+        ]),
+    ], className="space-y-4 text-gray-600 leading-relaxed text-sm mb-8")
+
+    ga_2_1 = html.Div([
+        html.H3("2.1. Analysis assumptions", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("Financial and social discount rates provided in Analysis assumptions are used to discount the cash flows in financial and economic analyses, respectively, and ultimately to calculate the values of Financial Net Present Value (FNPV) as well as Economic Net Present Value (ENPV) of a project. The first year in which the discounting occurs is always ‘Base year +1’ (e.g. if base year is set to 2026, then 2027 is the first year in which the cash flows are discounted). The following formula is used:"),
+            html.Div(
+                html.Div([
+                    html.Div(["PV = FV / (1 + r)", html.Sup("t")], className="text-lg font-semibold text-gray-800 mb-1"),
+                    html.Div([
+                        html.Div([html.Span("PV", className="font-semibold"), " — present value"]),
+                        html.Div([html.Span("FV", className="font-semibold"), " — future value"]),
+                        html.Div([html.Span("r", className="font-semibold"), " — discount rate"]),
+                        html.Div([html.Span("t", className="font-semibold"), " — time period"]),
+                    ], className="text-xs text-gray-500 mt-3 text-left space-y-0.5"),
+                ], className="inline-block bg-gray-50 border border-gray-200 rounded-xl px-8 py-5 font-mono text-center"),
+                className="my-6 flex justify-center",
+            ),
+            html.P("As such, when calculating PV of cash flows in the base year, ‘t’ always equals 0."),
+        ], className="space-y-4 text-gray-600 leading-relaxed text-sm"),
+    ], className="mb-8")
+
+    ga_2_2 = html.Div([
+        html.H3("2.2. Fiscal adjustment coefficients", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("Data provided in this section can be divided into two categories, each having a different impact on calculations in the later stages of the analysis:"),
+            html.Ol([html.Li("VAT rate(s)"), html.Li("Employment tax")], className="space-y-1 pl-4 list-decimal list-inside"),
+            html.P("All of the fiscal adjustment coefficients are automatically applied in the calculations in the tool."),
+        ], className="space-y-4 text-gray-600 leading-relaxed text-sm mb-4"),
+        html.Div([
+            html.H4("2.2.1. VAT rates", className="text-sm font-bold text-gray-800 mb-2"),
+            html.P("Different rates of VAT can be applied to each category of capital expenditures, each category of operating expenditures (except Wages and salaries cost category), and all revenue streams in a project. Their impact on the calculations can be multifactorial depending on provided information concerning Data types and VAT recoverability. Additionally, the aforementioned choices also have an effect on the Residual value calculations.",
+                   className="text-sm text-gray-600 leading-relaxed"),
+        ], className="mb-6"),
+        html.Div([
+            html.H4("2.2.2. Employment tax", className="text-sm font-bold text-gray-800 mb-2"),
+            html.P("Employment tax is a coefficient that only applies to the Wages and salaries category in the OPEX section of the analysis.",
+                   className="text-sm text-gray-600 leading-relaxed"),
+        ]),
+    ], className="mb-8")
+
+    ga_2_3 = html.Div([
+        html.H3("2.3. Depreciation factors for estimating residual value", className="text-base font-bold text-gray-900 mb-3"),
+        html.P("Residual value of a project is calculated automatically using the asset-based approach, which determines the net asset value at the end of the reference period. This amount is included as a positive cash flow in the final year of the analysis. Annual asset depreciation is calculated using the straight-line method, which reduces the asset’s value by an equal amount each year, starting from the first year of the operation period.",
+               className="text-sm text-gray-600 leading-relaxed"),
+    ], className="mb-8")
+
+    ga_2_4_table = html.Div([
+        html.Div([
+            html.P("Analysis based on net values", className="font-semibold text-gray-800 mb-1"),
+            _ecba_bullets([
+                "Costs in financial analysis are based on net values unless VAT is not recoverable for the implementing or operating entity",
+                "Economic analysis is based on net values regardless of VAT recoverability; wages and salaries are excluded from deductions (assuming a well-functioning labour market)",
+            ], tight=True),
+        ]),
+        html.Div([
+            html.P("Analysis based on gross values", className="font-semibold text-gray-800 mb-1"),
+            _ecba_bullets([
+                "Gross values are used in the financial analysis, and VAT recoverability is not an issue",
+                "Economic analysis is still based on net values regardless of the chosen option or VAT recoverability",
+            ], tight=True),
+        ]),
+    ], className="bg-gray-50 rounded-xl p-5 space-y-3")
+
+    ga_2_4 = html.Div([
+        html.H3("2.4. Data types — Input and Output data types; Constant and Current prices", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("As the tool offers its users an option to convert uploaded data from net to gross values and vice versa, it is necessary to establish these parameters for each analysis."),
+            html.P([html.Strong("Input data type", className="text-gray-800"), " determines whether the values uploaded in the tool are net values (i.e. void of any taxes) or gross values, meaning that they include taxes based on rates provided in fiscal adjustment coefficients."]),
+            html.P([html.Strong("Output data type", className="text-gray-800"), " determines what kind of information the analysis should be based on."]),
+            ga_2_4_table,
+            html.P([html.Strong("Current prices or constant prices", className="text-gray-800"), " determines whether the analysis should incorporate the effects of inflation. If Current prices are selected, the tool will automatically adjust the input data throughout the reference period based on the information provided in the Macroeconomic assumptions table (excluding Wages and salaries category in OPEX)."]),
+            html.P("The Macroeconomic assumptions table includes inflation, projected real wage growth, and projected nominal wage growth, and displays cumulative values over the entire reference period. For the base year these values should always be set to 0%, meaning that regardless of chosen pricing option, data entered for the base year will not be adjusted for inflation or wage growth. Data should be entered either for each year of the reference period or, alternatively, only for the first 5 years if the tool is to assume that the rates are constant afterwards."),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ])
+
+    general_assumptions = _ecba_section("general-assumptions", "General Assumptions", [ga_intro, ga_2_1, ga_2_2, ga_2_3, ga_2_4])
+
+    # ── Financial Analysis ───────────────────────────────────────────────
+    fa_intro = html.Div([
+        html.P("The financial analysis methodology used in the tool is the Discounted Cash Flow (DCF) method. The calculations aggregate all positive and negative cash flows for each project variant, and then subtract the cash flows of the baseline scenario (i.e. Variant 0 or ‘business-as-usual’ scenario) from each investment alternative (i.e. Variant 1, Variant 2, and so on). Only actual cash inflows and outflows are considered in the analysis; therefore, depreciation, reserves, price and technical contingencies and other accounting items which do not correspond to real cash flows should be excluded. The key financial indicators — Financial Net Present Value (FNPV) and Internal Rate of Return (IRR) — are calculated based on these differential cash flows for each investment variant."),
+        html.P([html.Strong("Variant 0", className="text-gray-800"), " represents a situation that would occur if the project is not implemented, covering both financial and economic conditions. This scenario does not always correspond to a strict ‘do-nothing’ option. In some cases, it may represent a ‘do-the-minimum’ scenario, which could include capital expenditures such as rehabilitation costs to reestablish the performance of the degraded asset if the proposed project is not undertaken. In such cases, the relevant capital expenditures (as well as any operational expenditures and revenues) should be entered in the appropriate tables."]),
+        html.P("The financial analysis and the calculations of project viability indicators rely on four categories of cash flows, each of which must be specified separately for every project variant:"),
+        html.Ol([
+            html.Li("Capital expenditures and Replacement costs (negative cash flows, i.e. expenses)"),
+            html.Li("Operational expenditures (negative cash flows, i.e. expenses)"),
+            html.Li("Revenues (positive cash flows)"),
+            html.Li("Residual value (positive cash flow in the last year of the reference period)"),
+        ], className="space-y-1 pl-4 list-decimal list-inside"),
+    ], className="space-y-4 text-sm text-gray-600 leading-relaxed mb-8")
+
+    fa_3_1 = html.Div([
+        html.H3("3.1. Capital expenditures and Replacement costs", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("The Capital expenditures section covers all expenditures related to the acquisition or major improvements of fixed assets required to set up or establish a project. These may include tangible assets (e.g. buildings, structures, machinery or equipment) and intangible assets (e.g. information, communication, IT systems). Data entered into the tool should be grouped and categorized based on shared parameters regarding VAT recoverability, Tax rate, and Depreciation rate. Annual expenditure values must be provided for each year of the Investment period."),
+            html.P([
+                "Any expenditure entered for years after the End of investment period will be treated by the tool as a ",
+                html.Strong("Replacement cost", className="text-gray-800"),
+                ", i.e. an expenditure required to maintain the status quo or to rehabilitate the degraded assets. In principle, these costs must be incurred to ensure that assets remain functional. Replacement costs differ from Maintenance and repair costs within Operational expenditures, as the latter cover only minor renovation works that are not essential for the continued operation of the infrastructure.",
+            ]),
+            html.P("Additionally, the tool will apply depreciation to all capital and replacement costs entered in the Capital expenditures section and will calculate the investment’s residual value based on these inputs. It is important to note that in a situation where parts of a project become operational before the overall investment is completed (e.g. project begins operations in 2030, while some investment costs continue to be incurred in 2031 and 2032), then the tool will still technically classify these expenditures as Replacement costs and apply the corresponding depreciation and residual value calculation rules accordingly."),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ], className="mb-8")
+
+    fa_3_2 = html.Div([
+        html.H3("3.2. Operational expenditures", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div(
+            html.P("Operational expenditures include all costs related to operation and maintenance of the service throughout the project’s lifetime. These costs must not include depreciation, interest, and loan repayments. Data entered into the tool should be grouped and categorized based on shared parameters regarding VAT recoverability and Tax rate. Special attention should be given to the Wages and salaries category as these costs follow a different set of rules in the calculations compared to other operational expenditures."),
+            className="space-y-4 text-sm text-gray-600 leading-relaxed",
+        ),
+        html.Div([
+            html.H4("3.2.1. Wages and salaries", className="text-sm font-bold text-gray-800 mb-2"),
+            html.Div([
+                html.P("Wages and salaries used in the financial analysis must always be presented as the full employer cost, i.e. it should include all social-security-related taxes, as well as overheads or surcharges. Regardless of the selected Input and Output data types, the tool consistently uses gross values of wages and salaries in the calculation of both financial and economic indicators."),
+                html.P("Additionally, wages and salaries are adjusted separately from other cost categories using Projected real wage growth rate or the Projected nominal wage growth rate, depending on whether the analysis is conducted in constant or current prices:"),
+                _ecba_bullets([
+                    [html.Span("If the analysis is performed in "), html.Strong("Constant prices", className="text-gray-800"), html.Span(", the tool automatically adjusts wages and salaries using Projected real wage growth rate throughout the whole reference period.")],
+                    [html.Span("If the analysis is performed in "), html.Strong("Current prices", className="text-gray-800"), html.Span(", the tool applies the Projected nominal wage growth rate to the annual wages and salaries values.")],
+                ]),
+                html.P("The projected nominal wage growth is calculated by combining inflation rate and real wage growth rate for a given year."),
+            ], className="space-y-3 text-sm text-gray-600 leading-relaxed"),
+        ], className="mt-4"),
+    ], className="mb-8")
+
+    fa_3_3 = html.Div([
+        html.H3("3.3. Revenues", className="text-base font-bold text-gray-900 mb-3"),
+        html.P("Operational Revenues include all cash inflows generated from the provision of goods and services or from monetizing usage and/or availability. Users are expected to estimate these inflows based on current demand (where applicable) and projected future demand, taking into account the existing infrastructure’s current capacity. Revenues used in the calculations of financial profitability must exclude transfers, subsidies, and other financial income, as these do not arise from project operations. Data entered into the tool should be grouped and categorized according to shared Tax rate parameters.",
+               className="text-sm text-gray-600 leading-relaxed"),
+    ], className="mb-8")
+
+    residual_value_rows = [
+        ("net→net", "No adjustments are made unless VAT is non-recoverable for one or more cost categories (in such cases gross values for those categories are used in residual value calculations)"),
+        ("net→gross", "All capital expenditures and replacement costs are converted into gross values, which are then used to calculate the residual value"),
+        ("gross→net", "All costs are converted into net values and the residual value is calculated using the net values unless VAT is non-recoverable for specific categories (for those categories gross values are used instead)"),
+        ("gross→gross", "No adjustments are made; residual value is calculated directly from the entered inputs"),
+    ]
+    fa_3_4_table = html.Div(
+        [html.P("Input and Output data type combinations", className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3")]
+        + [
+            html.Div([
+                html.Span(rtype, className="font-mono font-semibold text-accent1 flex-shrink-0 w-24"),
+                html.Span(desc, className="text-gray-600"),
+            ], className="flex gap-3 text-sm")
+            for rtype, desc in residual_value_rows
+        ]
+        + [
+            html.Div([
+                html.Span("Current prices", className="font-semibold text-gray-800 flex-shrink-0 w-24"),
+                html.Span("If Current prices are selected, the tool automatically adjusts input values for inflation before performing the calculations", className="text-gray-600"),
+            ], className="flex gap-3 text-sm pt-1 border-t border-gray-200 mt-2"),
+        ],
+        className="bg-gray-50 rounded-xl p-5 space-y-2",
+    )
+    fa_3_4 = html.Div([
+        html.H3("3.4. Residual value", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("Residual value of each investment variant is calculated separately based on the inputs provided in the Capital expenditures and Replacement costs tables. All capital expenditures incurred during the investment phase (i.e. between Start of investment period and End of investment period) are aggregated within each CAPEX category defined by the user and depreciated annually using the applicable depreciation rate for that category. Depreciation for these costs begins in the first year of the operational period and continues until the end of the reference period or until the asset category is fully depreciated, whichever occurs first."),
+            html.P("For replacement costs incurred during any year of the operational phase, depreciation begins in the following year of the analysis, using the same approach and depreciation rate applied to the corresponding cost category in capital expenditures. If the reference period ends before a replacement cost is fully depreciated, the net value of the asset (i.e. the original cost reduced by the accumulated depreciation) is added to the project variant’s residual value."),
+            html.P("In the financial analysis, the values of capital expenditures and replacement costs used to calculate depreciation and residual value may be adjusted automatically by the tool depending on the user’s selections in Data types and based on VAT recoverability:"),
+            fa_3_4_table,
+            html.P("In the economic analysis, all capital expenditures and replacement costs are converted into net values and the residual value calculations are performed using these values (regardless of chosen Input and Output data types or VAT recoverability settings; however, if Current prices are selected, inflation adjustments may still affect the calculations)."),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ], className="mb-8")
+
+    fa_3_5_steps = [
+        "General assumptions are established and financial data is entered.",
+        "Inflation adjustments — if Current prices are selected, the tool adjusts all relevant input values for inflation.",
+        "Input and Output data types adjustments — if the analysis requires a net→gross or gross→net conversion, the tool applies the appropriate adjustment. Wages and salaries are always converted to gross values when necessary.",
+        "VAT recoverability — if the implementing entity is unable to recover VAT for any cost category, gross values for these expenditures are used in all financial calculations, regardless of the selected Input and Output data type.",
+        "Cash flow aggregation — all positive and negative cash flows are summed separately for each variant, including Variant 0.",
+        "Differential cash flow calculation and financial indicators — cash flows of the baseline scenario (Variant 0) are subtracted from each investment variant. The financial indicators are then calculated using these differential cash flows (e.g. Variant 1 — Variant 0; Variant 2 — Variant 0, etc.).",
+    ]
+    fa_3_5 = html.Div([
+        html.H3("3.5. Summary of calculation steps in the financial analysis", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("Applying the rules outlined in previous sections, the financial analysis follows these calculation steps:"),
+            html.Ol([
+                html.Li([
+                    html.Span(str(i + 1), className="flex-shrink-0 w-6 h-6 rounded-full bg-accent1/10 text-accent1 text-xs font-bold flex items-center justify-center mt-0.5"),
+                    html.Span(step),
+                ], className="flex gap-3")
+                for i, step in enumerate(fa_3_5_steps)
+            ], className="space-y-3 pl-4"),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ])
+
+    financial_analysis = _ecba_section("financial-analysis", "Financial Analysis", [fa_intro, fa_3_1, fa_3_2, fa_3_3, fa_3_4, fa_3_5])
+
+    # ── Economic Analysis ────────────────────────────────────────────────
+    ea_intro = html.Div([
+        html.P("Evaluating economic costs, benefits, non-market impacts, and externalities in the context of cost-benefit analysis is a complex and data-intensive process. Such analyses are typically intricate and require extensive data collection and research before aggregated values can be incorporated into decision-making tools. Sector-specific variability, unique project characteristics, and the need for comprehensive data across sectors and regions make standardization particularly challenging. These calculations fall outside the scope of what the eCBA tool currently accommodates. However, this does not mean that they should be omitted, as project proposers are expected to conduct these assessments and document them appropriately in the background materials accompanying the eCBA inputs."),
+        html.P("The current release of the eCBA tool does not request a BAU economic value stream, but instead asks only for the incremental valuation of economic costs and benefits. This approach was chosen to avoid excessive complexity and potential confusion for users conducting foundational CBA. In a full breakdown, these series would typically be presented in detailed economic benefit modelling worksheets. However, in many cases, calculation methods produce only incremental values, and requiring BAU and project values to be separated would have necessitated an additional workflow."),
+        html.P("Future releases of the eCBA are considering the introduction of a user workflow that allows both series — BAU and with-project — to be entered separately, with the tool then calculating the resulting incremental values. This functionality is intended primarily for more advanced users, including those working with detailed valuation of climate change adaptation and resilience measures."),
+    ], className="space-y-4 text-sm text-gray-600 leading-relaxed mb-8")
+
+    ea_4_1 = html.Div([
+        html.H3("4.1. General approach", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("As the eCBA tool is intended to function as a universal instrument applicable globally across diverse project types and sectors, it is not feasible to provide a uniform framework for the detailed and often project-specific calculations required, e.g. related to demand estimation or valuation of economic benefits, costs, externalities or non-market impacts. Therefore, a simplified and more flexible approach was chosen."),
+            html.P("The economic analysis in the tool builds upon the financial analysis by automatically converting or adjusting the financial cash flows generated from the user’s inputs. The tool also provides space for users to add monetized benefits, costs, non-market impacts and externalities arising from project implementation. These entries are treated as additional positive or negative cash flows and are incorporated into the adjusted or converted financial cash flows."),
+            html.P("Economic indicators are then calculated based on the resulting differential cash flows, using the same methodology applied in the financial analysis."),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ], className="mb-8")
+
+    ea_4_2_items = [
+        ("Removal of taxes", "All taxes are removed from capital expenditures, replacement costs, operational expenditures, and revenues — regardless of the choices made in Input and Output data types or VAT recoverability settings."),
+        ("Exception for wages and salaries", "Wages and salaries are exempt from tax removal — the full employer cost is always retained."),
+        ("Residual value adjustments", "Residual value is recalculated using the adjusted (tax-removed) or converted (net) capital expenditures and replacement costs."),
+        ("Integration of additional economic items", "All identified benefits, costs, non-market impacts and externalities are added to the positive or negative cash flows, depending on their nature."),
+        ("Application of general rules", "The same rules used in the financial analysis apply regarding general assumptions, Constant or Current prices option, residual value calculations, and the differential cash flows method."),
+        ("Calculation of economic indicators", "Economic indicators are calculated based on the newly derived differential cash flows."),
+    ]
+    ea_4_2 = html.Div([
+        html.H3("4.2. From financial to economic analysis", className="text-base font-bold text-gray-900 mb-3"),
+        html.Div([
+            html.P("The tool applies several rules when converting or adjusting data provided in the financial analysis. These rules are as follows:"),
+            html.Ul([
+                html.Li([
+                    html.Span("•", className="text-accent1 flex-shrink-0 mt-0.5"),
+                    html.Span([html.Strong(f"{title}:", className="text-gray-800"), f" {desc}"]),
+                ], className="flex gap-2")
+                for title, desc in ea_4_2_items
+            ], className="space-y-3 pl-4"),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+    ])
+
+    economic_analysis = _ecba_section("economic-analysis", "Economic Analysis", [ea_intro, ea_4_1, ea_4_2])
+
+    # ── Summary ──────────────────────────────────────────────────────────
+    summary = _ecba_section("summary", "Summary", [
+        html.Div([
+            html.P("Completing a foundational project CBA is a prerequisite for addressing advanced climate change considerations, particularly those related to damage and loss risks (D&L). Climate change mitigation can be assessed by applying a shadow price for carbon; however, it is equally important to understand how differential calculations are conducted between the BAU scenario and Variant 1 (e.g. comparing diesel versus an electric train scenario)."),
+            html.P("Within the project appraisal framework, users may also be asked to provide a qualitative assessment of potential climate-related risks and possible mitigation options, including their implications for financial series. The Climate Change Screening and the detailed CBA guidance offer further support for this more quantitative approach and are documented in accompanying manuals."),
+            html.P("Ultimately, completing the basic project profile within the online CBA tool is a necessary precondition for undertaking any climate-informed CBA exercises."),
+        ], className="space-y-4 text-sm text-gray-600 leading-relaxed"),
+        html.Div([
+            html.P("Ready to try the eCBA tool?", className="text-sm text-gray-700 mb-4"),
+            html.A(
+                ["Launch eCBA Tool", Icon("external_link", size=16, color="#FFFFFF")],
+                href="https://www.gpbp-ecba.app/", target="_blank", rel="noopener noreferrer",
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-accent1 text-white text-sm font-semibold hover:bg-accent1/90 transition-colors",
+            ),
+        ], className="mt-10 p-6 rounded-xl bg-accent1/5 border border-accent1/20"),
+    ])
+
+    article = html.Article(
+        [introduction, project_details, general_assumptions, financial_analysis, economic_analysis, summary],
+        className="flex-1 min-w-0 prose-headings:scroll-mt-32",
+    )
+
+    return html.Div([
+        hero,
+        html.Div(
+            className="bg-white py-16",
+            children=html.Div(
+                html.Div([EcbaMethodologyNav(), article], className="flex gap-16 items-start"),
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            ),
         ),
     ])
 
@@ -1383,6 +1747,10 @@ def route(search):
     if page == "home":
         return home_page()
     if page == "digital-tools":
+        view = (query.get("view", [None])[0] or "").strip().lower()
+        if view == "ecba-methodology":
+            logger.info("Routing to eCBA Methodology page.")
+            return ecba_methodology_page()
         return digital_tools_page()
     if page == "infragov":
         return infragov_page()

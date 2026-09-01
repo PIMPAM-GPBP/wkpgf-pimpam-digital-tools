@@ -319,6 +319,7 @@ TOOLS = [
             "- **Sharing and collaboration** \u2014 share analyses with colleagues and evaluators in one click."
         ),
         "href": "https://www.gpbp-ecba.app/", "screenshot": "screenshots/ecba.png", "icon": "icons/ecba.png", "videoId": "1078016182/840a6546c2",
+        "extraLinks": [{"label": "eCBA Methodology", "href": "?page=digital-tools&view=ecba-methodology"}],
     },
     {
         "id": "ccs", "family": "gpbp", "name": "Climate Change Screening Tool", "acronym": "CCS",

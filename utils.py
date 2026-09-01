@@ -150,6 +150,49 @@ def SectionHeading(heading, eyebrow=None, subheading=None, centered=False,
 
 
 # ──────────────────────────────────────────────────────────────────────────
+# EcbaMethodologyNav.tsx
+# ──────────────────────────────────────────────────────────────────────────
+
+ECBA_METHODOLOGY_NAV_ITEMS = [
+    ("introduction", "Introduction"),
+    ("project-details", "Project Details"),
+    ("general-assumptions", "General Assumptions"),
+    ("financial-analysis", "Financial Analysis"),
+    ("economic-analysis", "Economic Analysis"),
+    ("summary", "Summary"),
+]
+
+
+def EcbaMethodologyNav():
+    """Sticky sidebar anchor nav for the eCBA Methodology page. Mirrors the
+    original's useState("introduction") + useEffect(IntersectionObserver)
+    active-section highlighting: the first item starts active/purple here,
+    and app.index_string's initEcbaMethodologyNav() (an IntersectionObserver,
+    same rootMargin as the original) takes over from there as the user
+    scrolls."""
+    links = [
+        html.Li(
+            html.A(
+                label, href=f"#{item_id}", **{"data-nav-target": item_id},
+                className=(
+                    "block text-sm py-1 transition-colors leading-snug "
+                    + ("text-accent1 font-semibold" if i == 0 else "text-gray-500 hover:text-accent1")
+                ),
+            )
+        )
+        for i, (item_id, label) in enumerate(ECBA_METHODOLOGY_NAV_ITEMS)
+    ]
+    return html.Aside(
+        id="ecba-methodology-nav",
+        className="hidden lg:block flex-shrink-0 w-52 sticky top-28",
+        children=html.Nav([
+            html.P("On this page", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4"),
+            html.Ul(links, className="space-y-1"),
+        ]),
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────
 # Nav.tsx
 # ──────────────────────────────────────────────────────────────────────────
 
@@ -645,6 +688,19 @@ def ToolDrawerContent(tool):
             className="inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 rounded bg-accent1 text-white text-base font-semibold hover:bg-accent1/90 transition-colors",
         )
     )
+    if tool.get("extraLinks"):
+        buttons.append(
+            html.Div(
+                [
+                    html.A(
+                        link["label"], href=link["href"], target="_blank", rel="noopener noreferrer",
+                        className="text-sm text-accent1 hover:underline",
+                    )
+                    for link in tool["extraLinks"]
+                ],
+                className="flex flex-wrap gap-x-4 gap-y-1 justify-center pt-1",
+            )
+        )
     return html.Div(
         className="flex flex-col h-full",
         children=[
