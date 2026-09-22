@@ -389,6 +389,48 @@ def DimensionGrid():
 
 
 # ──────────────────────────────────────────────────────────────────────────
+# MustHavesStrip.tsx  (Digital Tools page — compact "8 Must-Haves" framing band)
+#   Tiles use flex-wrap with an inline flex-basis instead of the original's
+#   responsive grid-cols-2/4/8, since this project's compiled tailwind.css
+#   (assets/tailwind.css) is a static, pre-purged build — see the comment on
+#   MustHavesStrip() below for why arbitrary/uncommon utility classes can't
+#   be introduced without a rebuild.
+# ──────────────────────────────────────────────────────────────────────────
+
+def MustHavesStrip():
+    tiles = [
+        html.Li(
+            [
+                html.P(dim["number"], className="text-xs font-black leading-none mb-1.5", style={"color": COLORS["accent3"]}),
+                html.P(dim["title"], className="text-xs font-semibold text-white leading-snug"),
+            ],
+            className="bg-surface px-3 py-4 text-center",
+            style={"flex": "1 1 110px"},
+        )
+        for dim in DIMENSIONS_8
+    ]
+    return html.Section(
+        className="py-14 bg-gray-50 border-b border-gray-200",
+        children=html.Div(
+            className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=[
+                html.Div([
+                    html.H2("Built around the 8 Must-Haves", className="text-2xl font-bold text-gray-900 mb-2"),
+                    html.P(
+                        "The 8 Must-Haves are the essential functions every well-run public investment system "
+                        "performs, following a project from its first idea to its final review. Each tool below is "
+                        "built to strengthen one or more of them.",
+                        className="text-gray-600 leading-relaxed",
+                    ),
+                ], className="mb-6"),
+                html.Ol(tiles, className="flex flex-wrap border border-white/10 rounded-lg overflow-hidden bg-white/10",
+                        style={"gap": "1px"}),
+            ],
+        ),
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────
 # DimensionCarousel.tsx  (InfraGov 2.0 — 16 dimensions horizontal scroller)
 # ──────────────────────────────────────────────────────────────────────────
 

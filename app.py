@@ -28,7 +28,7 @@ from utils import (
     format_date_long, VideoCard, VideoIframe, FeedbackFormFields,
     FeedbackThankYou, ResourceCard, ToolAreaCard, BroughtToYouByStrip,
     SupportedByCarousel, EventCard, AgendaAccordion, EcbaMethodologyNav,
-    MasterClassCard,
+    MasterClassCard, MustHavesStrip,
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -523,6 +523,7 @@ def digital_tools_page():
     )
     return html.Div([
         hero,
+        MustHavesStrip(),
         html.Section(
             className="pt-14 pb-24 bg-white",
             children=html.Div(ToolListSection(C.TOOL_FAMILIES, C.TOOLS), className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"),
