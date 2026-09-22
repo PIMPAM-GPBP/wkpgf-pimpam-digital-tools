@@ -28,6 +28,7 @@ from utils import (
     format_date_long, VideoCard, VideoIframe, FeedbackFormFields,
     FeedbackThankYou, ResourceCard, ToolAreaCard, BroughtToYouByStrip,
     SupportedByCarousel, EventCard, AgendaAccordion, EcbaMethodologyNav,
+    MasterClassCard,
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -392,8 +393,8 @@ def home_page():
                                        className="text-base text-gray-500 leading-relaxed"),
                             ], className="mt-6 space-y-5"),
                             html.Div(
-                                dcc.Link(["Explore Tools ", IconArrow(size=80, color=C.COLORS["accent1"])], href="?page=digital-tools",
-                                         className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
+                                dcc.Link(["Explore Tools ", IconArrow(size=18, color=C.COLORS["accent1"])], href="?page=digital-tools",
+                                            className="inline-flex items-center gap-2 px-6 py-3 rounded border border-accent1 text-accent1 text-base font-semibold hover:bg-accent1 hover:text-white transition-colors"),
                                 className="mt-8",
                             ),
                         ]),
@@ -1244,22 +1245,212 @@ def digital_academy_page():
         "academy-hero",
         "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.22) 0%, transparent 65%)",
         "Learning", "Learning resources for better infrastructure governance",
-        "Video guides, tutorials, and expert sessions to help your team get the most from the InfraGov 2.0 framework and PIM-PAM digital tools.",
+        "Hands-on Master Class programmes you can run with your own teams, regional practice groups, or government counterparts – plus video guides on public investment practice, process mapping, design thinking, and cost-benefit analysis.",
     )
+
+    templates_section = html.Section(
+        className="py-20 bg-white",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=[
+                html.Div([
+                    html.H2("Model Learning Templates", className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3"),
+                    html.P(
+                        "Model half-day, three-contact-hour courses and clinics built around learning by doing – "
+                        "applying the pim-pam.net Geospatial Planning and Budgeting (GPB) tools to public investment "
+                        "projects in each country and regional context. Backed by the InfraGov 2.0 framework, the aim "
+                        "is to move from “less memos, to more demos”: results that can be replicated and scaled across clients.",
+                        className="text-gray-600 leading-relaxed",
+                    ),
+                ], className="max-w-3xl mb-10"),
+                html.Div([MasterClassCard(mc) for mc in C.MASTER_CLASSES], className="grid grid-cols-1 md:grid-cols-2 gap-5"),
+                html.Div(
+                    className="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-7",
+                    children=[
+                        html.H3("How Deliveries Work", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+                        html.Ul([
+                            html.Li([html.Span(className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent2"), note],
+                                    className="flex gap-3 text-sm text-gray-600 leading-relaxed")
+                            for note in C.MASTER_CLASS_DELIVERY_NOTES
+                        ], className="space-y-3"),
+                    ],
+                ),
+            ],
+        ),
+    )
+
     cards = []
     for v in C.ACADEMY_VIDEOS:
         thumb = get_vimeo_thumbnail(v["vimeoId"])
         cards.append(VideoCard(v["title"], v["vimeoId"], thumbnail_url=thumb))
     logger.debug("digital_academy_page: rendered %d video cards.", len(cards))
 
-    return html.Div([
-        hero,
-        html.Section(
-            className="py-20 bg-white",
-            children=html.Div(html.Div(cards, className="grid grid-cols-1 md:grid-cols-2 gap-10"),
-                               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"),
+    videos_section = html.Section(
+        className="py-20 bg-gray-50 border-t border-gray-200",
+        children=html.Div(
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            children=[
+                html.Div([
+                    html.H2("Video Guides & Tutorials", className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3"),
+                    html.P(
+                        "Short recorded sessions covering the PIM-PAM approach, business process mapping, design "
+                        "thinking, and cost-benefit analysis.",
+                        className="text-gray-600 leading-relaxed",
+                    ),
+                ], className="max-w-3xl mb-10"),
+                html.Div(cards, className="grid grid-cols-1 md:grid-cols-2 gap-10"),
+            ],
         ),
-    ])
+    )
+
+    return html.Div([hero, templates_section, videos_section])
+
+
+def master_class_detail_page(view):
+    number = view[len("masterclass-"):] if view.startswith("masterclass-") else view
+    mc = next((m for m in C.MASTER_CLASSES if m["number"] == number), None)
+    if not mc:
+        logger.warning("master_class_detail_page: no master class found for view=%r — rendering 404.", view)
+        return not_found_page()
+
+    format_value = next((i["value"] for i in mc["atAGlance"] if i["label"] == "Format"), None)
+    badges = html.Div(
+        className="mb-6 flex flex-wrap gap-2",
+        children=[
+            html.Span(f'Master Class {mc["number"]}', className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-accent1/15", style={"color": C.COLORS["accent3"]}),
+        ] + ([html.Span(format_value, className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-accent2/15 text-accent2")] if format_value else []),
+    )
+
+    hero = html.Section(
+        className="pt-40 pb-14 relative overflow-hidden bg-bg",
+        style={"background": "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.22) 0%, transparent 65%), #0A0E1A"},
+        children=[
+            GridOverlay(),
+            html.Div(
+                className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
+                children=[
+                    dcc.Link([Icon("arrow_left", size=14, color=C.COLORS["muted"]), " Learning"], href="?page=digital-academy",
+                             className="inline-flex items-center gap-2 text-sm text-muted hover:text-text transition-colors mb-5"),
+                    badges,
+                    html.H1(mc["title"], className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-6"),
+                    html.P(mc["subtitle"], className="text-white/60 leading-relaxed") if mc.get("subtitle") else None,
+                ],
+            ),
+        ],
+    )
+
+    glance_tiles = []
+    for i, item in enumerate(mc["atAGlance"]):
+        icon_name = C.MASTER_CLASS_GLANCE_ICONS.get(item["label"], "wrench")
+        glance_tiles.append(html.Div(
+            className=f'px-5 py-3.5 border-white/10 {"border-t" if i > 0 else ""}',
+            children=[
+                html.Div([Icon(icon_name, size=15, color=C.COLORS["accent2"], className="flex-shrink-0"),
+                          html.P(item["label"], className="text-xs font-bold uppercase tracking-wider text-white/60")],
+                         className="flex items-center gap-2 mb-1"),
+                html.P(item["value"], className="text-sm text-white leading-snug"),
+            ],
+        ))
+
+    overview = html.Div(
+        className="bg-gray-50 border-b border-gray-200",
+        children=html.Div(
+            className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14",
+            children=html.Div(
+                className="grid grid-cols-1 md:grid-cols-2 gap-10",
+                children=[
+                    html.Section([
+                        html.H2("Objective", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+                        html.P(mc["objective"], className="text-gray-600 leading-relaxed"),
+                    ]),
+                    html.Section([
+                        html.H2("At a Glance", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+                        html.Div(glance_tiles, className="bg-surface border border-white/10 rounded-lg overflow-hidden"),
+                    ]),
+                ],
+            ),
+        ),
+    )
+
+    agenda_rows = [
+        html.Div(
+            className="flex flex-wrap items-start gap-5 py-5",
+            children=[
+                html.P(row["time"], className="text-sm font-semibold text-accent1", style={"flexShrink": "0", "width": "110px"}),
+                html.Div([
+                    html.P(row["title"], className="text-base font-semibold text-gray-900 leading-snug"),
+                    html.P(row["focus"], className="text-sm text-gray-500 leading-relaxed mt-1"),
+                ], className="flex-1", style={"minWidth": "200px"}),
+                html.P(row["lead"], className="text-sm text-gray-500", style={"flexShrink": "0", "width": "150px", "textAlign": "right"}) if row.get("lead") else None,
+            ],
+        )
+        for row in mc["agenda"]
+    ]
+
+    sections = [
+        html.Section([
+            html.H2("Agenda", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.Div(agenda_rows, className="divide-y divide-gray-100 border-t border-b border-gray-200"),
+        ]),
+        html.Section([
+            html.H2("Participants Will Leave Able To", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.Ul([
+                html.Li([html.Span(className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent2"), outcome],
+                        className="flex gap-3 text-gray-600 leading-relaxed")
+                for outcome in mc["outcomes"]
+            ], className="space-y-3"),
+        ]),
+        html.Section([
+            html.H2("Delivered By", className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.P(mc["deliveredBy"], className="text-gray-600 leading-relaxed"),
+        ]),
+    ]
+
+    if mc.get("about"):
+        sections.append(html.Section([
+            html.H2(mc["about"]["heading"], className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5"),
+            html.P(mc["about"]["body"], className="text-gray-600 leading-relaxed"),
+        ]))
+
+    if mc.get("showGpbSeries"):
+        gpb_children = [html.H2(
+            "Geospatial Planning and Budget (GPB) Technical Master Classes (200 Series)",
+            className="text-xs font-bold uppercase tracking-widest text-accent2 mb-5",
+        )]
+        if mc.get("seriesIntro"):
+            gpb_children.append(html.P(mc["seriesIntro"], className="text-gray-600 leading-relaxed mb-8"))
+        tool_cards = []
+        for tool in (t for t in C.TOOLS if t["family"] == "gpbp"):
+            icon_el = html.Img(src=asset(tool["icon"]), alt="", className="flex-shrink-0 w-14 h-14 object-contain") if tool.get("icon") else None
+            tool_cards.append(dcc.Link(
+                [
+                    icon_el,
+                    html.Div([
+                        html.P(tool["name"], className="text-sm font-semibold text-gray-900 leading-snug"),
+                        html.P(tool["acronym"], className="text-xs text-gray-500 mt-0.5") if tool.get("acronym") else None,
+                    ], className="min-w-0"),
+                ],
+                href="?page=digital-tools#gpbp",
+                className="flex items-center gap-4 rounded-lg border border-gray-200 p-4 hover:border-accent1/40 hover:bg-accent1/5 transition-colors",
+            ))
+        gpb_children.append(html.Div(tool_cards, className="grid grid-cols-1 sm:grid-cols-2 gap-4"))
+        sections.append(html.Section(gpb_children))
+
+    if mc.get("references"):
+        sections.append(html.Section([
+            html.H2("Selected References", className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4"),
+            html.Ul([
+                html.Li([html.Span(className="mt-2 flex-shrink-0 w-1 h-1 rounded-full bg-gray-300"), html.Span(ref)],
+                        className="flex gap-3 text-sm text-gray-500 leading-relaxed")
+                for ref in mc["references"]
+            ], className="space-y-3"),
+        ]))
+
+    body = html.Div(
+        html.Div(sections, className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-14"),
+        className="bg-white",
+    )
+    return html.Div([hero, overview, body])
 
 
 EVENT_FORMAT_LABELS = {"in-person": "In-Person", "virtual": "Virtual", "hybrid": "Hybrid"}
@@ -1702,6 +1893,10 @@ def route(search):
     if page == "greening-development":
         return greening_development_page()
     if page == "digital-academy":
+        view = (query.get("view", [None])[0] or "").strip().lower()
+        if view.startswith("masterclass-"):
+            logger.info("Routing to Master Class detail, view=%r", view)
+            return master_class_detail_page(view)
         return digital_academy_page()
     if page == "events":
         slug = query.get("slug", [None])[0]

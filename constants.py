@@ -154,6 +154,18 @@ ICONS_STROKE = {
     "map_pin": '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
     # lucide-react ChevronDown  (AgendaAccordion.tsx)
     "chevron_down": '<path d="m6 9 6 6 6-6"/>',
+    # lucide-react Clock  (MasterClassPage.tsx "At a Glance" tiles)
+    "clock": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    # lucide-react Users  (MasterClassPage.tsx "At a Glance" tiles)
+    "users": '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    # lucide-react GraduationCap  (MasterClassPage.tsx "At a Glance" tiles)
+    "graduation_cap": '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+    # lucide-react Wrench  (MasterClassPage.tsx "At a Glance" tiles)
+    "wrench": '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+    # lucide-react MonitorSmartphone  (MasterClassPage.tsx "At a Glance" tiles)
+    "monitor_smartphone": '<path d="M18 8V5c0-1-1-2-2-2H4C3 3 2 4 2 5v8c0 1 1 2 2 2h8"/><path d="M10 19v-3.96 3.15"/><path d="M7 19h5"/><rect x="16" y="12" width="6" height="10" rx="2"/>',
+    # lucide-react Building2  (MasterClassPage.tsx "At a Glance" tiles)
+    "building2": '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
 }
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -395,6 +407,253 @@ ACADEMY_VIDEOS = [
     {"id": "7", "title": "Cost-Benefit Analysis (Intro)", "vimeoId": "1097818664"},
     {"id": "8", "title": "Cost-Benefit Analysis (Part 2)", "vimeoId": "1097818525"},
     {"id": "9", "title": "Cost-Benefit Analysis (Part 3)", "vimeoId": "1097818585"},
+]
+
+# Icon (ICONS_STROKE key) shown for each "At a Glance" tile label on a
+# Master Class detail page — mirrors MasterClassPage.tsx's glanceIcons map.
+MASTER_CLASS_GLANCE_ICONS = {
+    "Format": "clock",
+    "Audience": "users",
+    "Level": "graduation_cap",
+    "Tools": "wrench",
+    "Platform": "monitor_smartphone",
+    "Sector": "building2",
+}
+
+# "How Deliveries Work" notes shown under the Master Class template grid on
+# the Digital Academy page.
+MASTER_CLASS_DELIVERY_NOTES = [
+    "A regional Director or Practice Manager typically initiates a module; the task team then defines current client priorities and staff learning needs.",
+    "Cohorts are ideally no more than 15–20 people, to keep engagement and exchange strong.",
+    "Deliveries are ideally face-to-face, but can also run in a hybrid fashion (for example DC morning / regional afternoon slots).",
+    "Regional teams identify specific country project pipelines and portfolio issues, which are then integrated into the delivery.",
+    "Versions can be tailored to government counterparts or to national and sub-national trainer-of-trainers deliveries, customized to the relevant national PIM-PAM policy context (see the pim-pam.ai PIM Country Policy Profiles and AI Coach).",
+    "Events can be delivered through Bank- or Recipient-executed activities.",
+]
+
+# Model Learning Templates (content/masterClasses.ts, app/digital-academy/[slug]/page.tsx).
+# Each entry's "number" is the value used in the "?page=digital-academy&view=masterclass-<number>"
+# detail-page route. "atAGlance" items are rendered with the icon from
+# MASTER_CLASS_GLANCE_ICONS matching their "label". "agenda" rows follow the
+# EVENTS agenda-row shape (time/title/focus/lead) used elsewhere on the site.
+MASTER_CLASSES = [
+    {
+        "slug": "master-class-101",
+        "number": "101",
+        "title": "Public Investment & Asset Management (PIM-PAM): Foundations, Tools & Operations",
+        "subtitle": "An integrated overview setting the stage for the four technical-level Master Classes.",
+        "summary": "An integrated overview of public investment and asset management – why it matters, who is involved, the InfraGov 2.0 framework, and the pim-pam.net toolset.",
+        "objective": "Provide an integrated overview of Public Investment and Asset Management (PIM-PAM): why it matters for development outcomes, the institutional actors involved, the InfraGov 2.0 modular approach, and the pim-pam.net/pim-pam.ai digital resources – setting the stage for the four technical-level Master Classes on Geospatial Planning and Budget (GPB) tools for Cost-Benefit Analysis (CBA).",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "Task Teams, Senior Officials, development partners"},
+            {"label": "Level", "value": "Foundational – overview"},
+            {"label": "Tools", "value": "pim-pam.net · GPB · GOAT · AI"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Course objectives and link to the four technical Master Classes that follow.", "lead": "Chair"},
+            {"time": "09:00–09:20", "title": "1. Key Concepts & Outcomes", "focus": "Scope of public infrastructure, land, and property; interplay between non-financial asset stocks (incl. digital data) and new investment flows.", "lead": "WBG Lead"},
+            {"time": "09:20–09:35", "title": "2. Development Challenge", "focus": "How poor investment management impairs growth, structural change, fiscal space, and jobs creation.", "lead": "WBG Economist"},
+            {"time": "09:35–09:50", "title": "3. The Who of PIM-PAM", "focus": "Central finance, planning & economy support/challenge function; roles of national MDAs, Sub-National Governments, and State-Owned Enterprises.", "lead": "WBG + Partner"},
+            {"time": "09:50–10:00", "title": "4. InfraGov 2.0 Approach", "focus": "What better PIM-PAM outcomes require: the modular framework and how its pieces fit together.", "lead": "WBG Lead"},
+            {"time": "10:00–10:25", "title": "The Project Cycle: Strong Preparation to Better Outcomes", "focus": "What are the methodologies/tools used during project preparation according to the proportionality concept (inc. economic analysis, climate risk analysis, etc,)"},
+            {"time": "10:25–10:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "10:40–11:05", "title": "5. Digitalization for PIM-PAM", "focus": "How digitalization supports better outcomes and what information is required at each stage of the cycle.", "lead": "Knowledge Partner"},
+            {"time": "11:05–11:45", "title": "6. pim-pam.net Resources", "focus": "Data analytics & visualization platforms; Geospatial Planning & Budgeting (GPB) tools – CBA, CCS, LDT, PIA; and Generative AI.", "lead": "WBG + Partner"},
+            {"time": "11:45–12:15", "title": "7. PIM-PAM in Operations", "focus": "Using the Governance Operations Analytics Tool (GOAT) to track IPF, PforR, and DPO operations.", "lead": "External Expert"},
+            {"time": "12:15–12:35", "title": "8. Further Resources", "focus": "Roadmap of the four technical Master Classes and the Awareness / Application / Adoption digital decision-support engagements.", "lead": "Chair"},
+            {"time": "12:35–12:45", "title": "Synthesis & Q&A", "focus": "Key takeaways and next steps for participants.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Frame PIM-PAM as a driver of growth, fiscal space, and jobs",
+            "Map institutional roles across MDAs, SNGs, and SOEs",
+            "Navigate pim-pam.net tools (GPB, GOAT, AI) and choose a follow-on Master Class",
+        ],
+        "deliveredBy": "World Bank Group staff, in collaboration with external experts and knowledge partners.",
+        "showGpbSeries": True,
+        "seriesIntro": "The Public Investment Management (PIM)/Public Asset Management (PAM) pim-pam.net Geospatial Planning and Budgeting (GPB) tools provide learning resources and implementation tools that can be replicated and scaled across different country contexts. The Master Classes are intended to assist Bank colleagues, country counterparts, and other development partners in advancing a journey of awareness, application to adoption of open-source methods and tools.",
+        "references": [
+            "World Bank. (2026b). Infrastructure Governance Assessment Framework: A Modular Approach for Better Outcomes (InfraGov 2.0). Washington, DC: Prosperity Vertical Governance Practice, April, pp. 52 + Summary.",
+        ],
+    },
+    {
+        "slug": "master-class-102",
+        "number": "102",
+        "title": "Public Investment Portfolio Rationalization",
+        "summary": "Identify and tackle shortcomings in existing capital spending portfolios – weak project rationales, cost and time overruns, and climate risk exposure – and prioritise what to keep, restructure or stop.",
+        "objective": "The master class helps participants identify and tackle shortcomings in existing capital expenditure/public investment portfolios. These include poor or outdated project rationales/viability, cost and time overruns, and exposure of climate change risks. Portfolio rationalization is often required in the context of fiscal consolidation, low public investment efficiency, and strategic program prioritization. Rationalization applies the same Project Readiness and cost-benefit tests to projects already in the portfolio.",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "Task Teams, Senior Officials, development partners"},
+            {"label": "Level", "value": "Foundational – overview"},
+            {"label": "Tools", "value": "pim-pam.net Portfolio Doctor, Project Readiness Gate, eCBA, AI tooling for Data Wrangling"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Course objectives and link to the four technical Master Classes that follow.", "lead": "Chair"},
+            {"time": "09:00–09:20", "title": "1. Key Concepts & Outcomes", "focus": "Define criteria by which public investment portfolio could be rationalized and more proactively managed for better public investment outcomes", "lead": "WBG Lead"},
+            {"time": "09:20–09:35", "title": "2. Development Challenge", "focus": "How poor investment management impairs growth, structural change, fiscal space, and jobs creation. Existing public investment portfolios are often overcommitted with projects that are running over time and cost, without adequate clarity of expected development outcomes", "lead": "WBG Economist"},
+            {"time": "09:35–09:50", "title": "3. The Who of PIM Portfolio Rationalization", "focus": "Central finance, planning & economy support/challenge function; roles of national MDAs, Sub-National Governments, and State-Owned Enterprises.", "lead": "WBG + Partner"},
+            {"time": "09:50–10:00", "title": "4. Criteria for Program-Projects-Procurements Contract Rationalization", "focus": "Measures of time and cost overruns, procurement/contract commitments, ex post assessments of project rationales and viability under imperfect information, re-testing committed projects against Project Readiness criteria and eCBA results.", "lead": "WBG Lead"},
+            {"time": "10:00–10:25", "title": "The Project Cycle: Strong Preparation to Better Outcomes", "focus": "What are the methodologies/tools used during project rationalization according to the proportionality concept (inc. size, economic analysis, climate risk analysis, etc,)"},
+            {"time": "10:25–10:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "10:40–11:05", "title": "5. Digitalization for PIM-PAM", "focus": "How digitalization supports better outcomes and what information is required for portfolio rationalization and further sustained proactive management. How to conduct required data wrangling for different data readiness/Financial-Public Information Management (PIMIS) contexts", "lead": "Knowledge Partner"},
+            {"time": "11:05–11:45", "title": "6. pim-pam.net Resources", "focus": "Data analytics & visualization platforms; Model Portfolio Doctor, the Project Readiness Gate and eCBA, AI tools for data wrangling", "lead": "WBG + Partner"},
+            {"time": "11:45–12:15", "title": "7. PIM Rationalization Operations", "focus": "Using the Portfolio Rationalization Approach in DPO, IPF, and PforR operations. Measuring benefits-value for money", "lead": "External Expert"},
+            {"time": "12:15–12:35", "title": "8. Further Resources", "focus": "Roadmap Awareness / Application / Adoption digital decision-support engagements, leadership and ownership assessments of rationalization reforms", "lead": "Chair"},
+            {"time": "12:35–12:45", "title": "Synthesis & Q&A", "focus": "Key takeaways and next steps for participants.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Frame PIM-PAM as a driver of growth, fiscal space, and jobs",
+            "Develop and measure criteria for PIM portfolio rationalization",
+            "Navigate pim-pam.net tools, and prioritize and sequence PIM Portfolio with the support of digital decision support deployments",
+        ],
+        "deliveredBy": "World Bank Group staff, in collaboration with external experts and knowledge partners.",
+        "showGpbSeries": True,
+        "seriesIntro": "The Public Investment Management (PIM)/Public Asset Management (PAM) pim-pam.net Geospatial Planning and Budgeting (GPB) tools provide learning resources and implementation tools that can be replicated and scaled across different country contexts. The Master Classes are intended to assist Bank colleagues, country counterparts, and other development partners in advancing a journey of awareness, application to adoption of open-source methods and tools.",
+        "references": [
+            "World Bank. (2026b). Infrastructure Governance Assessment Framework: A Modular Approach for Better Outcomes (InfraGov 2.0). Washington, DC: Prosperity Vertical Governance Practice, April, pp. 52 + Summary.",
+            "Moon, Samuel, Kim, Jay-Hyung, Mroczka, Fabienne, & Fallov, Jonas Arp. (2026). Public Investment Portfolio Rationalization: Guidelines for overcommitted, Climate-exposed, and Emergency-Affected Portfolios. Washington, DC: World Bank Prosperity Insight Series, InfraGov 2.0 Application Guidance (forthcoming), May, pp. 53.",
+        ],
+    },
+    {
+        "slug": "master-class-201",
+        "number": "201",
+        "title": "Public Investment Project Preparation with Online Cost-Benefit Analysis (CBA)",
+        "summary": "Lead with the Project Readiness application to strengthen and review concept notes at the pre-appraisal stage, then take projects further with eCBA – economic cost-benefit analysis, sensitivity testing and Reference Class Forecasting to counter cost and time biases.",
+        "objective": "In good practice PIM systems, public investment projects move through a systematic process, from identification and appraisal to selection, implementation and evaluation. This Master Class focuses on the early stages of that process: using the Project Readiness application to prepare and review concept notes against national policy and quality criteria, then applying online Cost-Benefit Analysis through eCBA where fuller economic appraisal is required – across sectors, for both Bank-financed and country-systems projects.",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "Task Teams, PIM units, sector staff"},
+            {"label": "Level", "value": "Intermediate – hands-on"},
+            {"label": "Platform", "value": "pim-pam.net online tools"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Registration, objectives of the Master Class, and introductions.", "lead": "Chair"},
+            {"time": "09:00–09:20", "title": "1. InfraGov 2.0 Overview", "focus": "Modular framework design to support better public investment outcomes across sectors.", "lead": "WBG Lead"},
+            {"time": "09:20–09:25", "title": "Short video on pim-pam.net GPB tools", "focus": "Why these tools, what do they cover, how can they be applied…"},
+            {"time": "09:25–09:55", "title": "2. Role of CBA", "focus": "CBA in pipeline project preparation and active / ex-post portfolio analysis.", "lead": "WBG Economist"},
+            {"time": "09:55–10:25", "title": "3. Mapping Prep. Requirements", "focus": "Using online AI tools to align national policy frameworks with WBG Economic & Finance Analysis (EFA) guidance.", "lead": "WBG + Partner"},
+            {"time": "10:25–10:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "10:40–11:30", "title": "4. Online CBA vs. Excel", "focus": "The case for online CBA relative to traditional Excel-based project preparation.", "lead": "Knowledge Partner"},
+            {"time": "11:30–12:00", "title": "5. Sensitivity & RCF", "focus": "Sensitivity analysis and Reference Class Forecasting to address cost, time, and benefit biases.", "lead": "External Expert"},
+            {"time": "12:00–12:25", "title": "6. Climate & D&L with GPB (Highlights with level 2 class available)", "focus": "Climate Change Screening (CCS) and Damage & Loss (D&L) analysis using pim-pam.net Geospatial Planning & Budgeting tools.", "lead": "WBG + Partner"},
+            {"time": "12:25–12:45", "title": "Synthesis & Q&A", "focus": "Key takeaways, open discussion, and next steps for participants.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Apply online CBA to projects at pipeline and ex-post stages",
+            "Run sensitivity analysis and RCF to counter preparation biases",
+            "Assess implications and extent of time and cost overruns in public investment outcomes/impact evaluations",
+            "Refer to CCS and D&L in the pim-pam.net GPB environment",
+        ],
+        "deliveredBy": "World Bank Group staff, in collaboration with external experts and knowledge partners.",
+    },
+    {
+        "slug": "master-class-202",
+        "number": "202",
+        "title": "Project Preparation for a Changing Climate: Risks, Resilience & GHG Mitigation",
+        "summary": "Screen projects for physical and transition climate risk, design adaptation and resilience measures, and bring GHG emissions into the appraisal.",
+        "objective": "Use the Geospatial Planning and Budgeting (GPB) Climate Change Screening (CCS) and Cost-Benefit Analysis (CBA) tools to address climate risks, design Adaptation & Resilience (A&R) measures, and reduce Greenhouse Gas (GHG) emissions in a data-informed manner.",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "Task Teams, PIM units, climate focal points"},
+            {"label": "Level", "value": "Intermediate – hands-on"},
+            {"label": "Tools", "value": "pim-pam.net GPB · CCS · CBA"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Why climate considerations belong in project preparation; objectives of the day.", "lead": "Chair"},
+            {"time": "09:00–09:25", "title": "1. Climate & Public Investment", "focus": "How climate change reshapes project costs, benefits, and risk profiles across sectors.", "lead": "WBG Lead"},
+            {"time": "09:25–09:55", "title": "2. Dimensions of Climate Risk", "focus": "Physical and transition risks, hazard categories, and exposure of public assets and services. EU climate change risk framework", "lead": "Climate Specialist"},
+            {"time": "09:55–10:25", "title": "3. Adaptation & Resilience", "focus": "A&R measures: design options, cost-effectiveness, and integration into project scoping.", "lead": "WBG + Partner"},
+            {"time": "10:25–10:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "10:40–11:10", "title": "4. Mitigation & GHG Emissions", "focus": "Estimating project GHG footprints and identifying low-emission design alternatives.", "lead": "Knowledge Partner"},
+            {"time": "11:10–11:45", "title": "5. CCS with GPB Tools", "focus": "Hands-on Climate Change Screening using pim-pam.net Geospatial Planning & Budgeting layers. Working with local uncertainty about climate change futures, GPB quantification", "lead": "External Expert"},
+            {"time": "11:45–12:25", "title": "6. Climate-Informed CBA", "focus": "Embedding A&R benefits, residual climate damages, and GHG shadow pricing in online CBA.", "lead": "WBG + Partner"},
+            {"time": "12:25–12:45", "title": "Synthesis & Q&A", "focus": "Key takeaways, open discussion, and how to apply CCS + CBA in your next project.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Identify physical and transition climate risks for a project",
+            "Run CCS in the GPB environment and select A&R measures",
+            "Integrate GHG accounting and resilience into online CBA",
+        ],
+        "deliveredBy": "World Bank Group staff, in collaboration with external climate experts and knowledge partners.",
+        "references": [
+            "World Bank. (2026a). InfraGov 2.0: Climate-Informed Project Preparation Supplementary Guidance. Washington, DC: Prosperity Vice Presidency, Global Governance Practice, April [final pre-publication draft], pp.",
+            "World Bank. (2026b). Infrastructure Governance Assessment Framework: A Modular Approach for Better Outcomes (InfraGov 2.0). Washington, DC: Prosperity Vertical Governance Practice, April, pp. 52 + Summary.",
+        ],
+    },
+    {
+        "slug": "master-class-203",
+        "number": "203",
+        "title": "Local Development Tracking with Big Data and AI",
+        "summary": "Build a prosperity, livability and infrastructure baseline for any sub-national geography, using big data and AI to surface local gaps and priorities.",
+        "objective": "Assess how sub-national governments perform on Prosperity, Livability (including climate exposure), and Infrastructure (roads, rail, energy, water, health, education, digital). Use big data and AI to surface insights, gaps, and priorities for local jobs, revenue mobilization, market-based finance, and stronger public investment outcomes.",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "National & sub-national clients, Task Teams"},
+            {"label": "Level", "value": "Intermediate – applied"},
+            {"label": "Tools", "value": "pim-pam.net GPB · LDT · AI SWOT"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Why local development tracking matters; objectives and structure of the day.", "lead": "Chair"},
+            {"time": "09:00–09:15", "title": "1. Local Government Data Challenge", "focus": "Administrations of different sizes and shifting boundaries; gaps in traditional administrative and statistical series.", "lead": "WBG Lead"},
+            {"time": "09:15–09:20", "title": "InfraGov 2.0 and the Special Challenge of Local Investments", "focus": "Highlight the interests of national Ministries of Finance versus Local Governments to improve investments, including with a line of sight to jobs creation"},
+            {"time": "09:20–09:25", "title": "Short video on pim-pam.net GPB tools", "focus": "Why these tools, what do they cover, how can they be applied…"},
+            {"time": "09:25–09:50", "title": "2. Local Strategy Challenge", "focus": "Variable quality and vintage of local development strategies; weak line-of-sight to jobs and outcomes.", "lead": "WBG Economist"},
+            {"time": "09:50–10:25", "title": "3. GPB & the PIL Baseline", "focus": "Applying the pim-pam.net Geospatial Planning & Budgeting tool to build a Prosperity, Livability & Infrastructure baseline.", "lead": "WBG + Partner"},
+            {"time": "10:25–10:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "10:40–11:15", "title": "4. AI SWOT on Local Strategies", "focus": "AI processing of Local Development Strategy documents against the PIL baseline to yield national and local SWOT.", "lead": "Knowledge Partner"},
+            {"time": "11:15–11:45", "title": "5. Local Jobs Trends", "focus": "Linking big data to administrative and statistical sources to generate jobs trends insights – ECA / Serbia illustration.", "lead": "WBG Poverty & Jobs Economist"},
+            {"time": "11:45–12:25", "title": "6. Client Engagement with LDT", "focus": "Using GPB LDT tools with national and sub-national clients to shape ASA products and operational design.", "lead": "WBG + Partner"},
+            {"time": "12:25–12:45", "title": "7. Synthesis & Q&A", "focus": "Key takeaways, open discussion, and pathways for follow-on engagement.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Build a PIL baseline for any sub-national geography in GPB",
+            "Run an AI SWOT against local strategy documents",
+            "Read local jobs trends from combined big-data and admin sources",
+        ],
+        "deliveredBy": "World Bank Group staff, in collaboration with external experts and knowledge partners.",
+    },
+    {
+        "slug": "master-class-204",
+        "number": "204",
+        "title": "Public Infrastructure Access (PIA) Tool",
+        "summary": "Map who can reach public services today, and simulate where new facilities would widen access the most – no GIS or coding skills required.",
+        "objective": "Demonstrate how data-driven geospatial analytics can help governments identify gaps in public infrastructure access, prioritize new investments, and track progress toward equity-driven coverage targets – with no coding or GIS expertise required.",
+        "atAGlance": [
+            {"label": "Format", "value": "3–4 Hours"},
+            {"label": "Audience", "value": "Task Teams, PIM units, health sector staff"},
+            {"label": "Level", "value": "Intermediate – hands-on"},
+            {"label": "Platform", "value": "pim-pam.net / Geospatial Hub"},
+            {"label": "Sector", "value": "Health (expandable to education, water, roads)"},
+        ],
+        "agenda": [
+            {"time": "08:45–09:00", "title": "Welcome & Framing", "focus": "Registration, objectives of the Master Class, and participant introductions.", "lead": "Chair"},
+            {"time": "09:00–09:25", "title": "InfraGov 2.0 Overview", "focus": "Modular framework design to support better public investment outcomes across sectors.", "lead": "WBG Lead"},
+            {"time": "09:25–09:30", "title": "GPB Digital Tools Overview Video (5-min video – to be recorded)", "focus": "A 5-minute visual overview of all PIM/MEGA digital tools: PIA, eCBA, CCS, LDT, GoAT, AI Knowledge Coach, PIM Policy Repository, Portfolio Doctor, CLAD, and Country Demos. Sets the scene for where PIA sits in the ecosystem.", "lead": "Video"},
+            {"time": "09:30–10:25", "title": "1. The Access Problem – Why Geography Matters", "focus": "Healthcare access is geographic. Walking vs. driving time catchments. Why road-based analysis alone misses gaps. Country evidence from Timor-Leste and Zambia.", "lead": "Geospatial Lead"},
+            {"time": "10:25–10:55", "title": "2. GPB/MEGA Ecosystem Context", "focus": "Where PIA sits within the broader suite of digital tools. Links to eCBA, CCS, LDT, and the Geospatial Hub.", "lead": "WBG Lead"},
+            {"time": "10:55–11:25", "title": "3. Live Demo – Coverage Mapping", "focus": "Hands-on walkthrough: loading facility, generating coverage maps, and identifying underserved populations at national and sub-national level.", "lead": "WBG Economist / Facilitator"},
+            {"time": "11:25–11:40", "title": "Coffee Break", "focus": "Networking and informal Q&A."},
+            {"time": "11:40–12:10", "title": "4. Optimization – Where to Invest Next?", "focus": "Simulating thousands of potential facility locations. Visualizing incremental coverage gains and diminishing returns. Prioritizing investments across scales.", "lead": "WBG Economist / Facilitator"},
+            {"time": "12:10–12:30", "title": "5. Existing Challenges in methodology", "focus": "Challenges in mapping geospatial data; existing methods (Euclidean, topography, raster-based calculation, isochrone / catchment area) Incorporating facility construction costs into placement optimization.", "lead": "Data Scientist"},
+            {"time": "12:30–12:50", "title": "6. From Insight to Action", "focus": "How PIA outputs feed into budget proposals, capital investment plans, and WBG project preparation. Integration with eCBA and GPB tools for full investment appraisal.", "lead": "WBG Lead"},
+            {"time": "12:50–13:10", "title": "7. Hands-On Exercise", "focus": "Participants run their own country scenario: define a coverage target, identify top facility placement candidates, and generate a decision-ready output.", "lead": "WBG Economist / Facilitator"},
+            {"time": "13:10–13:30", "title": "Synthesis & Q&A", "focus": "Key takeaways, open discussion, and next steps for participants.", "lead": "Chair"},
+        ],
+        "outcomes": [
+            "Interpret coverage maps showing who can access care by walking or driving time",
+            "Identify underserved populations at national, regional, and facility-catchment level",
+            "Simulate new facility placements and evaluate incremental coverage gains",
+            "Understand diminishing returns and how to prioritize when resources are limited",
+            "Connect PIA outputs to budget proposals and WBG project preparation processes",
+            "Link PIA analysis to eCBA, CCS, and other GPB tools for end-to-end appraisal",
+        ],
+        "deliveredBy": "Governance staff along with the DIME team at DEC and the Innovation team, in collaboration with external experts and knowledge partners.",
+        "about": {
+            "heading": "About the pim-pam.net GPB PIA Tool",
+            "body": "The Geospatial Planning and Budgeting (GPB) Public Infrastructure Access (PIA) tool supports governments in identifying where healthcare centers exist today, who they serve, and – most importantly – where new investment will have the greatest impact. First piloted in Timor-Leste in 2021 and scaled to much larger countries such as Zambia (nearly 50× bigger), PIA is now a living system hosted on the World Bank's Geospatial Hub under the MEGA initiative. At its core, PIA answers two questions: Who is currently served? And where should new facilities be placed to reach the most people? It models both walking and driving catchments, simulates thousands of potential placement scenarios, and translates complex geospatial analytics into decision-ready outputs – no GIS or coding skills required.",
+        },
+    },
 ]
 
 # ──────────────────────────────────────────────────────────────────────────

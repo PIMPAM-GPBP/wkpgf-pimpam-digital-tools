@@ -715,6 +715,25 @@ def BlogCard(post):
 
 
 # ──────────────────────────────────────────────────────────────────────────
+# MasterClassPage.tsx — "Model Learning Templates" card (Digital Academy)
+# ──────────────────────────────────────────────────────────────────────────
+
+def MasterClassCard(mc):
+    return dcc.Link(
+        [
+            html.Span(f'Master Class {mc["number"]}',
+                      className="inline-block self-start text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-accent1/10 text-accent1 mb-4"),
+            html.H3(mc["title"], className="text-lg font-bold text-gray-900 leading-snug mb-2"),
+            html.P(mc["summary"], className="text-sm text-gray-500 leading-relaxed flex-1"),
+            html.Span(["View programme ", IconArrow(size=13, color=COLORS["accent1"])],
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent1 mt-5"),
+        ],
+        href=f'?page=digital-academy&view=masterclass-{mc["number"]}',
+        className="group flex flex-col rounded-xl border border-gray-200 p-6 hover:border-accent1/40 hover:bg-accent1/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent1",
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────
 # VideoCard.tsx  (Digital Academy)
 # ──────────────────────────────────────────────────────────────────────────
 
