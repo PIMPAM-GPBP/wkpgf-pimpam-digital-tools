@@ -145,60 +145,6 @@ app.index_string = f"""<!DOCTYPE html>
             }});
         }}
 
-        function initResourcesDropdown() {{
-            // Desktop: click to open a floating panel; closes on an
-            // outside click, an Escape press, or picking a link inside.
-            // Mobile: click expands an inline sub-list within the mobile
-            // menu instead of a floating panel. Mirrors Nav.tsx's
-            // useState-driven "Resources" dropdown with plain JS, same
-            // pattern as initMobileNav() above.
-            var dBtn = document.getElementById('nav-resources-btn');
-            var dMenu = document.getElementById('nav-resources-menu');
-            if (dBtn && dMenu && !dBtn.__init) {{
-                dBtn.__init = true;
-                var chevron = dBtn.querySelector('img');
-                function closeDesktop() {{
-                    dMenu.classList.add('hidden');
-                    dBtn.setAttribute('aria-expanded', 'false');
-                    if (chevron) chevron.style.transform = '';
-                }}
-                function openDesktop() {{
-                    dMenu.classList.remove('hidden');
-                    dBtn.setAttribute('aria-expanded', 'true');
-                    if (chevron) chevron.style.transform = 'rotate(180deg)';
-                }}
-                dBtn.addEventListener('click', function (e) {{
-                    e.stopPropagation();
-                    if (dMenu.classList.contains('hidden')) openDesktop(); else closeDesktop();
-                }});
-                dMenu.querySelectorAll('a').forEach(function (a) {{ a.addEventListener('click', closeDesktop); }});
-                document.addEventListener('click', function (e) {{
-                    if (!dMenu.classList.contains('hidden') && !dMenu.contains(e.target) && e.target !== dBtn) closeDesktop();
-                }});
-                document.addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeDesktop(); }});
-            }}
-
-            var mBtn = document.getElementById('nav-mobile-resources-btn');
-            var mMenu = document.getElementById('nav-mobile-resources-menu');
-            if (mBtn && mMenu && !mBtn.__init) {{
-                mBtn.__init = true;
-                var mChevron = mBtn.querySelector('img');
-                mBtn.addEventListener('click', function () {{
-                    var isHidden = mMenu.classList.contains('hidden');
-                    mMenu.classList.toggle('hidden');
-                    mMenu.classList.toggle('flex', isHidden);
-                    mBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-                    if (mChevron) mChevron.style.transform = isHidden ? 'rotate(180deg)' : '';
-                }});
-                mMenu.querySelectorAll('a').forEach(function (a) {{
-                    a.addEventListener('click', function () {{
-                        var mobileMenu = document.getElementById('nav-mobile-menu');
-                        if (mobileMenu) mobileMenu.classList.add('hidden');
-                    }});
-                }});
-            }}
-        }}
-
         function initCarousel() {{
             var track = document.getElementById('dimension-carousel-track');
             if (!track || track.__init) return;
@@ -312,7 +258,6 @@ app.index_string = f"""<!DOCTYPE html>
         function initAll() {{
             initNavScroll();
             initMobileNav();
-            initResourcesDropdown();
             initCarousel();
             initRevealOnScroll();
             initAgendaAccordions();
@@ -1298,7 +1243,7 @@ def digital_academy_page():
     hero = _hero_section(
         "academy-hero",
         "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.22) 0%, transparent 65%)",
-        "Digital Academy", "Learning resources for better infrastructure governance",
+        "Learning", "Learning resources for better infrastructure governance",
         "Video guides, tutorials, and expert sessions to help your team get the most from the InfraGov 2.0 framework and PIM-PAM digital tools.",
     )
     cards = []

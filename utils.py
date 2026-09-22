@@ -16,7 +16,7 @@ from datetime import datetime
 from dash import html, dcc
 
 from constants import (
-    COLORS, ICONS_FILL, ICONS_STROKE, NAV_TOP_LINKS, NAV_RESOURCES_ITEMS, FOOTER_TOOL_LINKS,
+    COLORS, ICONS_FILL, ICONS_STROKE, NAV_TOP_LINKS, FOOTER_TOOL_LINKS,
     FOOTER_OTHER_LINKS, DIMENSIONS_8, CAROUSEL_AREAS, CAROUSEL_DIMENSIONS,
     MATURITY_LEVELS, CARD_SCROLL_STEP,
 )
@@ -214,55 +214,6 @@ def NavBar():
     desktop_links = [_top_link(link) for link in NAV_TOP_LINKS]
     mobile_links = [_top_link(link, mobile=True) for link in NAV_TOP_LINKS]
 
-    # ── Resources dropdown (desktop: click-to-open panel; mobile: inline
-    #    expandable section). Mirrors Nav.tsx's useState-driven dropdown —
-    #    here it's plain vanilla JS (see the initResourcesDropdown() init
-    #    function in app.py's index_string), same pattern as the mobile
-    #    menu toggle just above it.
-    resources_panel_items = [
-        dcc.Link(
-            item["label"], href=item["href"],
-            className="block px-4 py-3 text-base font-medium text-muted hover:text-text hover:bg-white/5 rounded transition-colors whitespace-nowrap",
-        )
-        for item in NAV_RESOURCES_ITEMS
-    ]
-
-    desktop_resources = html.Div(
-        className="relative",
-        children=[
-            html.Button(
-                ["Resources", Icon("chevron_down", size=15, color="#8A93A8", className="transition-transform duration-200", style={"marginLeft": "2px"})],
-                id="nav-resources-btn",
-                n_clicks=0,
-                className="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted hover:text-text transition-colors duration-200 rounded hover:bg-white/5",
-                **{"aria-expanded": "false", "aria-haspopup": "true"},
-            ),
-            html.Div(
-                resources_panel_items,
-                id="nav-resources-menu",
-                className="hidden absolute top-full left-0 mt-1 w-64 bg-surface border border-white/10 rounded shadow-2xl py-2 z-50",
-            ),
-        ],
-    )
-
-    mobile_resources = html.Div(
-        className="flex flex-col",
-        children=[
-            html.Button(
-                ["Resources", Icon("chevron_down", size=15, color="#8A93A8", className="transition-transform duration-200")],
-                id="nav-mobile-resources-btn",
-                n_clicks=0,
-                className="flex items-center justify-between gap-2 px-4 py-3 text-sm font-medium text-muted hover:text-text rounded hover:bg-white/5 transition-colors",
-                **{"aria-expanded": "false"},
-            ),
-            html.Div(
-                resources_panel_items,
-                id="nav-mobile-resources-menu",
-                className="hidden flex-col pl-4 border-l border-white/5 ml-4 mb-1",
-            ),
-        ],
-    )
-
     return html.Header(
         id="site-nav",
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent",
@@ -281,7 +232,7 @@ def NavBar():
                             href="?page=home",
                             className="flex items-center",
                         ),
-                        html.Nav(desktop_links + [desktop_resources], className="hidden lg:flex items-center gap-1"),
+                        html.Nav(desktop_links, className="hidden lg:flex items-center gap-1"),
                         html.Button(
                             Icon("menu", size=20, color="#8A93A8"),
                             id="nav-mobile-btn",
@@ -295,7 +246,7 @@ def NavBar():
             html.Div(
                 id="nav-mobile-menu",
                 className="lg:hidden bg-surface/95 backdrop-blur-md border-b border-white/5 hidden",
-                children=html.Nav(mobile_links + [mobile_resources], className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"),
+                children=html.Nav(mobile_links, className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"),
             ),
         ],
     )

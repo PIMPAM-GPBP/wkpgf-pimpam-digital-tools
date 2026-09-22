@@ -152,28 +152,24 @@ ICONS_STROKE = {
     "calendar": '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
     # lucide-react MapPin
     "map_pin": '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
-    # lucide-react ChevronDown  (Nav.tsx Resources dropdown / AgendaAccordion.tsx)
+    # lucide-react ChevronDown  (AgendaAccordion.tsx)
     "chevron_down": '<path d="m6 9 6 6 6-6"/>',
 }
 
 # ──────────────────────────────────────────────────────────────────────────
 # NAVIGATION  (components/Nav.tsx)
-#   Nav.tsx now splits the top-level links from a "Resources" dropdown
-#   (Events / Digital Academy / Downloads) that opens on click (desktop)
-#   or expands inline (mobile). "Feedback" isn't in either — it's still
-#   reachable from the footer only, same as the current live site.
+#   Flat top-level nav links, no dropdown. "Feedback" isn't included —
+#   it's still reachable from the footer only, same as the current live
+#   site.
 # ──────────────────────────────────────────────────────────────────────────
 NAV_TOP_LINKS = [
     {"label": "Home", "href": "?page=home"},
     {"label": "Digital Tools", "href": "?page=digital-tools"},
     {"label": "InfraGov 2.0", "href": "?page=infragov", "badge": "New"},
     {"label": "Greening Development", "href": "?page=greening-development"},
-]
-
-NAV_RESOURCES_ITEMS = [
     {"label": "Events", "href": "?page=events"},
-    {"label": "Digital Academy", "href": "?page=digital-academy"},
-    {"label": "Downloads", "href": "?page=downloads"},
+    {"label": "Learning", "href": "?page=digital-academy"},
+    {"label": "Resources", "href": "?page=downloads"},
 ]
 
 # ──────────────────────────────────────────────────────────────────────────
