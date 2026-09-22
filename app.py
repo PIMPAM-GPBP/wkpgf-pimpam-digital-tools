@@ -519,7 +519,7 @@ def digital_tools_page():
         "digital-tools-hero",
         "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(67,69,170,0.2) 0%, transparent 65%)",
         "Digital Tools", "A full suite of tools for smarter governance",
-        "Eight open-source platforms spanning data analytics, geospatial planning, and generative AI \u2014 built for government practitioners.",
+        "Seven open-source platforms spanning data analytics, geospatial planning, and generative AI \u2014 built for government practitioners.",
     )
     return html.Div([
         hero,

@@ -193,7 +193,7 @@ FOOTER_TOOL_LINKS = [
     {"label": "Climate Change Screening", "href": "https://gpbp.adamplatform.eu/"},
     {"label": "Local Development Tracker", "href": "https://ldt.pim-pam.net"},
     {"label": "GoAT", "href": "https://datanalytics.worldbank.org/governance-operations-analytics-tool/"},
-    {"label": "CLAD Database", "href": "https://design4climate.eu.pythonanywhere.com/"},
+    # {"label": "CLAD Database", "href": "https://design4climate.eu.pythonanywhere.com/"},
 ]
 
 FOOTER_OTHER_LINKS = [
@@ -368,15 +368,15 @@ TOOLS = [
         "href": "https://datanalytics.worldbank.org/governance-operations-analytics-tool/",
         "screenshot": "screenshots/goat.png", "icon": "icons/goat.png", "videoId": None,
     },
-    {
-        "id": "clad", "family": "ai", "name": "Climate Change Legislation and Actions Database", "acronym": "CLAD",
-        "summary": "Derive climate-action insights from curated national legislative databases.",
-        "description": (
-            "Demonstrates how insights for climate action can be derived in an end-user centric manner from a curated set of strategies for each country.\n\n"
-            "The tool also allows users to assess any significant legislative and policy changes made since the latest available Country Climate and Development Report (CCDR), as well as provide relevant updates to Climate Change Institutional Assessments (CCIA)."
-        ),
-        "href": "https://design4climate.eu.pythonanywhere.com/", "screenshot": "screenshots/clad.png", "icon": None, "videoId": None,
-    },
+    # {
+    #     "id": "clad", "family": "ai", "name": "Climate Change Legislation and Actions Database", "acronym": "CLAD",
+    #     "summary": "Derive climate-action insights from curated national legislative databases.",
+    #     "description": (
+    #         "Demonstrates how insights for climate action can be derived in an end-user centric manner from a curated set of strategies for each country.\n\n"
+    #         "The tool also allows users to assess any significant legislative and policy changes made since the latest available Country Climate and Development Report (CCDR), as well as provide relevant updates to Climate Change Institutional Assessments (CCIA)."
+    #     ),
+    #     "href": "https://design4climate.eu.pythonanywhere.com/", "screenshot": "screenshots/clad.png", "icon": None, "videoId": None,
+    # },
     {
         "id": "rtd", "family": "ai", "name": "Climate Change Risk Threshold Database", "acronym": "RTD",
         "summary": "Identify climate thresholds that escalate damage and loss to public assets.",
